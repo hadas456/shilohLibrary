@@ -1,4 +1,3 @@
-// NotificationCenter.jsx - מרכז הודעות משופר עם ביצועים טובים יותר
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Bell, Check, X, RefreshCw, Book, MapPin, Calendar, Trash2, CheckCheck } from 'lucide-react';
 import {
@@ -6,29 +5,25 @@ import {
     markNotificationAsRead,
     deleteNotification,
     getUnreadNotificationsCount,
-    getBooks,
     cleanOldNotifications
 } from '../utils/dbHelpers';
+import { useLibrary } from '../context/LibraryContext';
 
-export default function NotificationCenter({ user }) {
+export default function NotificationCenter() {
+    const { user, books } = useLibrary();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [books, setBooks] = useState([]);
     const [selectedNotification, setSelectedNotification] = useState(null);
-    const [filter, setFilter] = useState('all'); // all, unread, read
+    const [filter, setFilter] = useState('all');
 
-    // טעינת נתונים בטעינה ראשונית
     useEffect(() => {
         if (user) {
             loadNotifications();
-            loadBooks();
 
-            // רענון אוטומטי כל דקה
             const interval = setInterval(loadNotifications, 60000);
 
-            // ניקוי הודעות ישנות פעם ביום
             const cleanupInterval = setInterval(() => {
                 cleanOldNotifications(user.id || user.username, 30);
             }, 24 * 60 * 60 * 1000);
@@ -39,15 +34,6 @@ export default function NotificationCenter({ user }) {
             };
         }
     }, [user]);
-
-    const loadBooks = async () => {
-        try {
-            const booksData = await getBooks();
-            setBooks(booksData);
-        } catch (error) {
-            console.error('שגיאה בטעינת ספרים:', error);
-        }
-    };
 
     const loadNotifications = useCallback(async () => {
         if (!user) return;

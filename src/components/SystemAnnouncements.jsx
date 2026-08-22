@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Plus, Trash2, ChevronRight, ChevronLeft, X } from 'lucide-react'; // הוספתי את האייקון X
-import { addAnnouncement, deleteAnnouncement } from '../utils/dbHelpers';
+import { Bell, Plus, Trash2, ChevronRight, ChevronLeft, X } from 'lucide-react';
+import { useLibrary } from '../context/LibraryContext';
 
-// ------------------------------------------------------
-// 🔔 קומפוננטת הודעות מערכת (מסתובבות) עם הגנה מכפילויות
-// ------------------------------------------------------
-export default function SystemAnnouncements({ user, announcements, onAddAnnouncement, onDeleteAnnouncement }) {
+export default function SystemAnnouncements() {
+    const {
+        user,
+        announcements,
+        addAnnouncement,
+        deleteAnnouncement
+    } = useLibrary();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newAnnouncement, setNewAnnouncement] = useState({ title: "", message: "", type: "info" });
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -61,16 +64,9 @@ export default function SystemAnnouncements({ user, announcements, onAddAnnounce
             };
 
             const savedAnnouncement = await addAnnouncement(announcementData);
-
-            // if (onAddAnnouncement) {
-            //     onAddAnnouncement(savedAnnouncement);
-            // }
-
-            // איפוס וסגירה באמצעות הפונקציה החדשה
             handleCloseForm();
-
             console.log('הודעה נוספה בהצלחה:', savedAnnouncement.title);
-
+        } catch (error) {
             console.error('שגיאה בהוספת הודעה:', error);
         } finally {
             setLoading(false);
@@ -83,9 +79,6 @@ export default function SystemAnnouncements({ user, announcements, onAddAnnounce
         setLoading(true);
         try {
             await deleteAnnouncement(announcementId);
-            if (onDeleteAnnouncement) {
-                onDeleteAnnouncement(announcementId);
-            }
         } catch (error) {
             console.error('שגיאה במחיקת הודעה:', error);
         } finally {

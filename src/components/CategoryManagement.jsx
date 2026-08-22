@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FolderPlus, Plus, Trash2, Edit2, Save, X, AlertCircle, Tag } from 'lucide-react';
 import {
-    getCategories,
     addCategory,
     updateCategory,
-    deleteCategory,
-    getBooks
+    deleteCategory
 } from '../utils/dbHelpers';
+import { useLibrary } from '../context/LibraryContext';
 
-// ------------------------------------------------------
-// 📂 קומפוננטת ניהול קטגוריות ספרים עם Firebase
-// ------------------------------------------------------
-export default function CategoryManagement({ currentUser }) {
-    const [categories, setCategories] = useState([]);
-    const [books, setBooks] = useState([]);
+export default function CategoryManagement() {
+    const {
+        user: currentUser,
+        categories,
+        setCategories,
+        books
+    } = useLibrary();
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -23,7 +23,6 @@ export default function CategoryManagement({ currentUser }) {
         color: 'blue'
     });
 
-    // צבעים זמינים לקטגוריות
     const availableColors = [
         { id: 'blue', name: 'כחול', class: 'bg-blue-500' },
         { id: 'green', name: 'ירוק', class: 'bg-green-500' },
@@ -39,30 +38,6 @@ export default function CategoryManagement({ currentUser }) {
         { id: 'emerald', name: 'ירוק זמרגד', class: 'bg-emerald-500' }
     ];
 
-    // טעינת נתונים ראשונית
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
-        setLoading(true);
-        try {
-            const [categoriesData, booksData] = await Promise.all([
-                getCategories(),
-                getBooks()
-            ]);
-            setCategories(categoriesData);
-            setBooks(booksData);
-            console.log('קטגוריות וספרים נטענו:', categoriesData.length, booksData.length);
-        } catch (error) {
-            console.error('שגיאה בטעינת נתונים:', error);
-            alert('שגיאה בטעינת הנתונים: ' + error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // יצירת ID ייחודי לקטגוריה
     const generateId = (name) => {
         return name.toLowerCase()
             .replace(/[^a-zA-Z0-9\u0590-\u05FF\s]/g, '') // רק אותיות ומספרים (כולל עברית)

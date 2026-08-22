@@ -6,6 +6,9 @@
   "description": "מערכת ספריית שילה - לוח שנה יהודי ומערכת ניהול ספרים עם Firebase",
   "scripts": {
     "dev": "vite",
+    "predev": "node scripts/generateSheetBooks.mjs",
+    "prebuild": "node scripts/generateSheetBooks.mjs",
+    "sync-sheet": "node scripts/generateSheetBooks.mjs --force",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",

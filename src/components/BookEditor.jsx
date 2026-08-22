@@ -1,19 +1,19 @@
-// src/components/BookEditor.jsx - עם תמיכה בתמונות מרובות
 import React, { useState, useEffect } from 'react';
 import { Save, AlertCircle, X, Upload } from 'lucide-react';
-import { getCategories } from '../utils/dbHelpers';
 import { uploadMultipleImages, deleteBookImage } from '../utils/imageUtils';
 import ImageUpload from './ImageUpload';
 import ImageGallery from './ImageGallery';
+import { useLibrary } from '../context/LibraryContext';
+import CatalogLocationPicker from './CatalogLocationPicker';
 
 export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
-    const [categories, setCategories] = useState([]);
+    const { categories } = useLibrary();
     const [formData, setFormData] = useState(book || {
         title: '',
         author: '',
         location: { color: '', letter: '', number: '' },
         description: '',
-        images: [], // שינוי מ-image לimages - מערך של תמונות
+        images: [],
         rating: 4.0,
         status: 'available',
         category: ''
@@ -24,19 +24,6 @@ export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(null);
     const [selectedFiles, setSelectedFiles] = useState([]);
-
-    // טעינת קטגוריות מה-DB
-    useEffect(() => {
-        const loadCategories = async () => {
-            try {
-                const data = await getCategories();
-                setCategories(data);
-            } catch (err) {
-                console.error('שגיאה בטעינת קטגוריות', err);
-            }
-        };
-        loadCategories();
-    }, []);
 
     // המרת תמונה יחידה למערך (תאימות לאחור)
     useEffect(() => {
@@ -140,16 +127,6 @@ export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
         }
     };
 
-    const updateLocation = (field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            location: {
-                ...prev.location,
-                [field]: value
-            }
-        }));
-    };
-
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -233,57 +210,15 @@ export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
                             </div>
                         </div>
 
-                        {/* מיקום הספר */}
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-right">מיקום הספר</label>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <input
-                                        type="text"
-                                        value={formData.location?.color || ''}
-                                        onChange={(e) => updateLocation('color', e.target.value)}
-                                        className={`w-full p-2 border rounded text-right ${errors.locationColor ? 'border-red-500' : 'border-gray-300'}`}
-                                        placeholder="צבע"
-                                        disabled={saving || uploading}
-                                    />
-                                    {errors.locationColor && <p className="text-red-500 text-xs mt-1">{errors.locationColor}</p>}
-                                </div>
-                                <div>
-                                    <input
-                                        type="text"
-                                        value={formData.location?.letter || ''}
-                                        onChange={(e) => updateLocation('letter', e.target.value)}
-                                        className={`w-full p-2 border rounded text-right ${errors.locationLetter ? 'border-red-500' : 'border-gray-300'}`}
-                                        placeholder="אות"
-                                        disabled={saving || uploading}
-                                    />
-                                    {errors.locationLetter && <p className="text-red-500 text-xs mt-1">{errors.locationLetter}</p>}
-                                </div>
-                                <div>
-                                    <input
-                                        type="text"
-                                        value={formData.location?.number || ''}
-                                        onChange={(e) => updateLocation('number', e.target.value)}
-                                        className={`w-full p-2 border rounded text-right ${errors.locationNumber ? 'border-red-500' : 'border-gray-300'}`}
-                                        placeholder="מספר"
-                                        disabled={saving || uploading}
-                                    />
-                                    {errors.locationNumber && <p className="text-red-500 text-xs mt-1">{errors.locationNumber}</p>}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* דירוג */}
-                        <div>
-                            <label className="block text-sm font-medium mb-2 text-right">דירוג</label>
-                            <input
-                                type="number"
-                                min="1"
-                                max="5"
-                                step="0.1"
-                                value={formData.rating}
-                                onChange={(e) => setFormData(prev => ({ ...prev, rating: parseFloat(e.target.value) }))}
-                                className="w-full p-2 border border-gray-300 rounded text-right"
+                            <label className="mb-2 block text-right text-sm font-medium">מיקום הספר</label>
+                            <p className="mb-3 text-right text-xs text-stone-500">
+                                בחרו צבע, אות ומספר מתוך קטלוג ישיבת שילה
+                            </p>
+                            <CatalogLocationPicker
+                                location={formData.location}
+                                onChange={(location) => setFormData((prev) => ({ ...prev, location }))}
+                                errors={errors}
                                 disabled={saving || uploading}
                             />
                         </div>

@@ -1,18 +1,62 @@
 import { HDate, HebrewCalendar, Event, greg, months } from '@hebcal/core';
+import { DEFAULT_LOAN_DAYS, MAX_LOAN_DAYS } from '../constants';
 
 export const fmtHebDay = new Intl.DateTimeFormat("he-u-ca-hebrew", { day: "numeric" });
 export const fmtHebMonthYear = new Intl.DateTimeFormat("he-u-ca-hebrew", {
     month: "long",
     year: "numeric",
 });
+export const fmtHebDate = new Intl.DateTimeFormat("he-u-ca-hebrew", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+});
 export const fmtHebFull = new Intl.DateTimeFormat("he-u-ca-hebrew", { dateStyle: "full" });
 export const fmtGregShort = new Intl.DateTimeFormat("he-IL", { day: "numeric" });
+export const fmtGregDate = new Intl.DateTimeFormat("he-IL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+});
+export const fmtGregMonthYear = new Intl.DateTimeFormat("he-IL", {
+    month: "long",
+    year: "numeric",
+});
+
+/** פורמט עברי מסורתי: תשפ״ו ל׳ אב */
+export function formatHebrewDateTraditional(date) {
+    try {
+        const hdate = new HDate(date);
+        // renderGematriya(true) → "ל׳ אב תשפ״ו"
+        const parts = hdate.renderGematriya(true).split(/\s+/).filter(Boolean);
+        if (parts.length < 3) return hdate.renderGematriya(true);
+        const [day, month, year] = parts;
+        return `${year} ${day} ${month}`;
+    } catch (error) {
+        console.warn('שגיאה בפורמט תאריך עברי מסורתי:', error);
+        return '';
+    }
+}
 
 export function toISODateKey(d) {
-    const y = d.getFullYear().HebrewCalendar;
+    const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`;
+}
+
+export function addDays(date, days) {
+    const next = new Date(date);
+    next.setDate(next.getDate() + days);
+    return next;
+}
+
+export function getLoanReturnBounds(from = new Date()) {
+    return {
+        minDate: toISODateKey(addDays(from, 1)),
+        defaultDate: toISODateKey(addDays(from, DEFAULT_LOAN_DAYS)),
+        maxDate: toISODateKey(addDays(from, MAX_LOAN_DAYS))
+    };
 }
 
 export function startOfDay(date) {

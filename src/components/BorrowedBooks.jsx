@@ -1,24 +1,22 @@
-// BorrowedBooks.jsx - מתוקן עם כפתור החזרת ספר
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Calendar, MapPin, RotateCcw, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import {
     getUserBorrowedBooks,
-    getBooks,
     updateLoanRequestStatus,
     updateBook,
     notifyAdminReturnRequest
 } from '../utils/dbHelpers';
+import { useLibrary } from '../context/LibraryContext';
 
-export default function BorrowedBooks({ user, onBookReturned }) {
+export default function BorrowedBooks({ onBookReturned }) {
+    const { user, books } = useLibrary();
     const [borrowedBooks, setBorrowedBooks] = useState([]);
-    const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [returningBookId, setReturningBookId] = useState(null);
 
     useEffect(() => {
         if (user) {
             loadBorrowedBooks();
-            loadAllBooks();
         }
     }, [user]);
 
@@ -36,23 +34,20 @@ export default function BorrowedBooks({ user, onBookReturned }) {
         }
     };
 
-    const loadAllBooks = async () => {
-        try {
-            const allBooks = await getBooks();
-            setBooks(allBooks);
-        } catch (error) {
-            console.error('שגיאה בטעינת ספרים:', error);
-        }
-    };
-
     const getBookDetails = (bookId) => {
         return books.find(book => book.id === bookId);
     };
 
-    const calculateDaysUntilReturn = (loanDate) => {
-        const loan = new Date(loanDate);
-        const returnDate = new Date(loan);
-        returnDate.setDate(loan.getDate() + 14); // 14 ימים להשאלה
+    const calculateDaysUntilReturn = (loanRequest, bookDetails) => {
+        const returnDate = loanRequest.expectedReturnDate
+            ? new Date(loanRequest.expectedReturnDate)
+            : bookDetails?.expectedReturnDate
+                ? new Date(bookDetails.expectedReturnDate)
+                : (() => {
+                    const date = new Date(loanRequest.updatedAt || loanRequest.createdAt);
+                    date.setDate(date.getDate() + 30);
+                    return date;
+                })();
 
         const today = new Date();
         const diffTime = returnDate - today;
@@ -197,7 +192,7 @@ export default function BorrowedBooks({ user, onBookReturned }) {
                     <div className="space-y-4">
                         {borrowedBooks.map(loanRequest => {
                             const bookDetails = getBookDetails(loanRequest.bookId);
-                            const { returnDate, daysLeft } = calculateDaysUntilReturn(loanRequest.updatedAt || loanRequest.createdAt);
+                            const { returnDate, daysLeft } = calculateDaysUntilReturn(loanRequest, bookDetails);
                             const isReturning = returningBookId === loanRequest.id;
                             const returnRequested = loanRequest.status === 'pending_return' || loanRequest.returnRequested;
 

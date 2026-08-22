@@ -24,6 +24,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Generated catalog snapshot from Google Sheets
+public/shiloh-books.json
+
 # Environment variables
 .env
 .env.local

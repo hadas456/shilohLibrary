@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Edit2, Trash2, Heart, Star, FileText, MapPin, Bell, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Edit2, Trash2, Heart, FileText, MapPin, Bell, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getStatusColor, getStatusText, getCategoryColor } from '../utils/bookHelpers';
 import {
     addLoanRequest,
@@ -10,6 +10,8 @@ import {
     notifyUserLoanApproved,
     notifyAdminNewRequest
 } from '../utils/dbHelpers';
+import { DEFAULT_LOAN_DAYS, MAX_LOAN_DAYS } from '../constants';
+import { addDays, getLoanReturnBounds } from '../utils/dateHelpers';
 
 const BookDetail = ({
     book,
@@ -23,17 +25,22 @@ const BookDetail = ({
     pendingRequests = [],
     onUpdateRequestStatus
 }) => {
-    const [showLoanForm, setShowLoanForm] = useState(false);
-    const [loanData, setLoanData] = useState({
-        contactPhone: '',
+    const loanBounds = getLoanReturnBounds();
+
+    const getDefaultLoanData = () => ({
+        contactPhone: user?.phone?.trim() || '',
         notes: '',
-        returnDate: ''
+        returnDate: loanBounds.defaultDate
     });
+
+    const [showLoanForm, setShowLoanForm] = useState(false);
+    const [loanData, setLoanData] = useState(getDefaultLoanData);
     const [submitting, setSubmitting] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [adminNotes, setAdminNotes] = useState('');
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [phoneError, setPhoneError] = useState('');
+    const [dateError, setDateError] = useState('');
 
     // ניהול תמונות - אם אין תמונות, אל תציג תמונה דיפולטיבית
     const images = book.images && book.images.length > 0 ? book.images :
@@ -54,6 +61,7 @@ const BookDetail = ({
     const handleLoanRequest = async (e) => {
         e.preventDefault();
         setPhoneError('');
+        setDateError('');
 
         if (!loanData.contactPhone.trim()) {
             setPhoneError('יש למלא מספר טלפון ליצירת קשר');
@@ -67,8 +75,15 @@ const BookDetail = ({
         }
 
         // בדיקה מול פרטי המשתמש במערכת (אם קיים שדה טלפון)
-        if (user.phone && user.phone !== loanData.contactPhone.trim()) {
+        const normalizePhone = (phone) => (phone || '').replace(/[-\s]/g, '');
+        if (user.phone && normalizePhone(user.phone) !== normalizePhone(loanData.contactPhone)) {
             setPhoneError('מספר הטלפון אינו תואם לפרטי המשתמש במערכת');
+            return;
+        }
+
+        const selectedReturnDate = loanData.returnDate || loanBounds.defaultDate;
+        if (selectedReturnDate < loanBounds.minDate || selectedReturnDate > loanBounds.maxDate) {
+            setDateError(`ניתן להשאיל בין יום אחד ל-${MAX_LOAN_DAYS} ימים`);
             return;
         }
 
@@ -83,7 +98,7 @@ const BookDetail = ({
                 requesterName: user.name,
                 contactPhone: loanData.contactPhone.trim(),
                 notes: loanData.notes.trim(),
-                expectedReturnDate: loanData.returnDate || null,
+                expectedReturnDate: selectedReturnDate,
                 status: 'pending',
                 createdAt: new Date().toISOString()
             };
@@ -102,14 +117,16 @@ const BookDetail = ({
 • ספר: ${book.title}
 • מבקש: ${user.name}
 • טלפון: ${loanData.contactPhone}
+• החזרה עד: ${new Date(`${selectedReturnDate}T00:00:00`).toLocaleDateString('he-IL')}
 
 הספר מועבר כעת לסטטוס "בעיבוד".
 הנהלת הספרייה תבדוק את הבקשה ותחזור אליך בהקדם.`);
 
             // סגירה אוטומטית של הטופס
             setShowLoanForm(false);
-            setLoanData({ contactPhone: '', notes: '', returnDate: '' });
+            setLoanData(getDefaultLoanData());
             setPhoneError('');
+            setDateError('');
 
         } catch (error) {
             console.error('שגיאה בשליחת בקשת השאלה:', error);
@@ -121,8 +138,16 @@ const BookDetail = ({
 
     const handleCancelLoan = () => {
         setShowLoanForm(false);
-        setLoanData({ contactPhone: '', notes: '', returnDate: '' });
+        setLoanData(getDefaultLoanData());
         setPhoneError('');
+        setDateError('');
+    };
+
+    const handleOpenLoanForm = () => {
+        setLoanData(getDefaultLoanData());
+        setPhoneError('');
+        setDateError('');
+        setShowLoanForm(true);
     };
 
     const handleUpdateRequestStatus = async (requestId, newStatus) => {
@@ -133,8 +158,9 @@ const BookDetail = ({
 
             if (newStatus === 'approved') {
                 await notifyUserLoanApproved(request.requesterId, request, adminNotes);
-                const returnDate = new Date();
-                returnDate.setDate(returnDate.getDate() + 14);
+                const returnDate = request.expectedReturnDate
+                    ? new Date(request.expectedReturnDate)
+                    : addDays(new Date(), DEFAULT_LOAN_DAYS);
                 await updateBook(book.id, {
                     status: 'borrowed',
                     borrowedBy: request?.requesterName,
@@ -310,12 +336,6 @@ const BookDetail = ({
                                 <div className="text-right w-full">
                                     <h1 className="text-2xl md:text-3xl font-bold mb-1">{book.title}</h1>
                                     <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2 text-sm md:text-base">
-                                        {/* <div className="flex items-center gap-2">
-                                            <Star className="text-yellow-400 fill-current" size={16} />
-                                            <span className="text-gray-500">דירוג:</span>
-                                            <span className="text-gray-900">{book.rating}</span>
-                                        </div> */}
-                                        {/* <span className="text-gray-400">|</span> */}
                                         <div className="flex items-center gap-2">
                                             <User size={16} className="text-gray-500" />
                                             <span className="text-gray-500">מחבר:</span>
@@ -417,7 +437,7 @@ const BookDetail = ({
                                     <span className="font-medium text-green-700">זמין להשאלה</span>
                                 </div>
                                 <button
-                                    onClick={() => setShowLoanForm(true)}
+                                    onClick={handleOpenLoanForm}
                                     className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                                     disabled={submitting}
                                 >
@@ -536,15 +556,29 @@ const BookDetail = ({
 
                                 <div>
                                     <label className="block text-sm font-medium text-blue-700 mb-2">
-                                        תאריך החזרה משוער (אופציונלי)
+                                        תאריך החזרה
                                     </label>
                                     <input
                                         type="date"
                                         value={loanData.returnDate}
-                                        onChange={(e) => setLoanData(prev => ({ ...prev, returnDate: e.target.value }))}
-                                        className="w-full rounded-lg border border-blue-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        min={loanBounds.minDate}
+                                        max={loanBounds.maxDate}
+                                        onChange={(e) => {
+                                            setLoanData(prev => ({ ...prev, returnDate: e.target.value }));
+                                            setDateError('');
+                                        }}
+                                        className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                            dateError ? 'border-red-500' : 'border-blue-300'
+                                        }`}
+                                        required
                                         disabled={submitting}
                                     />
+                                    <p className="text-xs text-stone-500 mt-1">
+                                        ברירת מחדל: {DEFAULT_LOAN_DAYS} יום. מקסימום {MAX_LOAN_DAYS} יום.
+                                    </p>
+                                    {dateError && (
+                                        <p className="text-red-500 text-xs mt-1">{dateError}</p>
+                                    )}
                                 </div>
 
                                 <div>

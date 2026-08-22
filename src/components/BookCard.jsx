@@ -1,6 +1,6 @@
 // src/components/BookCard.jsx - עם ניווט משופר בין תמונות
 import React, { useState } from 'react';
-import { User, Star, MapPin, Bell, Edit2, Trash2, Heart, ArrowRight, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { User, MapPin, Bell, Edit2, Trash2, Heart, ArrowRight, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getStatusColor, getStatusText, getCategoryColor, formatBookLocation } from '../utils/bookHelpers';
 
 const BookCard = ({
@@ -189,16 +189,9 @@ const BookCard = ({
                     {book.author}
                 </p>
 
-                {/* דירוג ומיקום */}
-                <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                        <Star className="text-yellow-400 fill-current" size={14} />
-                        <span className="text-sm text-gray-600 ml-1">{book.rating}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                        <MapPin size={14} className="ml-1" />
-                        <span>{formatBookLocation(book.location)}</span>
-                    </div>
+                <div className="mb-2 flex items-center justify-end text-sm text-gray-500">
+                    <MapPin size={14} className="ml-1" />
+                    <span>{formatBookLocation(book.location)}</span>
                 </div>
 
                 {/* הצגת בקשות השאלה למנהלים */}

@@ -1,10 +1,11 @@
 // src/components/BookCatalog.jsx
 import React, { useState, useEffect } from 'react';
-import { Book, Search, Filter, Heart, Plus, RefreshCw, Bell } from 'lucide-react';
+import { Book, Search, Heart, Plus, RefreshCw, Bell } from 'lucide-react';
 import BookCard from './BookCard';
 import BookDetail from './BookDetail';
 import { filterBooks } from '../utils/bookHelpers';
 import BookEditor from './BookEditor';
+import CatalogSearchFilters from './CatalogSearchFilters';
 
 import {
     updateBook,
@@ -13,11 +14,13 @@ import {
     getLoanRequests,
     updateLoanRequestStatus
 } from '../utils/dbHelpers';
+import { useLibrary } from '../context/LibraryContext';
 
 
-const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
+const BookCatalog = ({ onViewChange }) => {
+    const { books, setBooks, user, categories, dataLoading } = useLibrary();
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [locationFilter, setLocationFilter] = useState({ color: '', letter: '', number: '' });
     const [selectedBook, setSelectedBook] = useState(null);
     const [favorites, setFavorites] = useState(new Set());
     const [showFavorites, setShowFavorites] = useState(false);
@@ -25,6 +28,7 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
     const [showBookEditor, setShowBookEditor] = useState(false);
     const [loanRequests, setLoanRequests] = useState([]);
     const [loadingRequests, setLoadingRequests] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(48);
 
     // Initialize favorites from localStorage
     useEffect(() => {
@@ -59,7 +63,19 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
         }
     };
 
-    const filteredBooks = filterBooks(books, searchQuery, selectedCategory, showFavorites, favorites);
+    const filteredBooks = filterBooks(
+        books,
+        searchQuery,
+        '',
+        showFavorites,
+        favorites,
+        locationFilter
+    );
+    const visibleBooks = filteredBooks.slice(0, visibleCount);
+
+    useEffect(() => {
+        setVisibleCount(48);
+    }, [searchQuery, locationFilter, showFavorites]);
 
     const toggleFavorite = (bookId) => {
         const newFavorites = new Set(favorites);
@@ -159,8 +175,13 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
             // עדכון סטטוס הספר אם מאושר
             if (newStatus === 'approved' && bookId) {
                 const request = loanRequests.find(r => r.id === requestId);
-                const returnDate = new Date();
-                returnDate.setDate(returnDate.getDate() + 14);
+                const returnDate = request?.expectedReturnDate
+                    ? new Date(request.expectedReturnDate)
+                    : (() => {
+                        const date = new Date();
+                        date.setDate(date.getDate() + 30);
+                        return date;
+                    })();
 
                 await updateBook(bookId, {
                     status: 'borrowed',
@@ -237,14 +258,23 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
 
             {/* אינדיקטור בקשות ממתינות לאדמין */}
             {user?.role === 'admin' && loanRequests.filter(r => r.status === 'pending').length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2">
-                        <Bell className="w-5 h-5 text-yellow-600" />
-                        <span className="font-medium text-yellow-800">
-                            יש {loanRequests.filter(r => r.status === 'pending').length} בקשות השאלה ממתינות לאישור
+                <button
+                    type="button"
+                    onClick={() => onViewChange?.('returns')}
+                    className="w-full bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-right hover:bg-yellow-100 transition-colors"
+                >
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                            <Bell className="w-5 h-5 text-yellow-600" />
+                            <span className="font-medium text-yellow-800">
+                                יש {loanRequests.filter(r => r.status === 'pending').length} בקשות השאלה ממתינות לאישור
+                            </span>
+                        </div>
+                        <span className="text-sm text-yellow-700 underline underline-offset-2">
+                            עבור לניהול השאלות
                         </span>
                     </div>
-                </div>
+                </button>
             )}
 
             {/* חיפוש */}
@@ -259,46 +289,26 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
                 <Search className="absolute right-4 top-3.5 text-gray-400" size={20} />
             </div>
 
-            {/* קטגוריות */}
-            <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Filter className="ml-2" size={20} />
-                    חיפוש לפי קטגוריות
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                    <button
-                        onClick={() => setSelectedCategory('')}
-                        className={`px-3 py-1 rounded-full text-sm transition-colors ${!selectedCategory ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            } border`}
-                    >
-                        הכל
-                    </button>
-                    {categories.map(category => (
-                        <button
-                            key={category.id}
-                            onClick={() => setSelectedCategory(category.id)}
-                            className={`px-3 py-1 rounded-full text-sm transition-colors ${selectedCategory === category.id
-                                ? `bg-${category.color}-500 text-white`
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                } border`}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            <CatalogSearchFilters value={locationFilter} onChange={setLocationFilter} />
 
             {/* תוצאות */}
             <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    {showFavorites ? 'הספרים המועדפים שלך' : `נמצאו ${filteredBooks.length} ספרים`}
-                    {selectedCategory && ` בקטגוריה: ${categories.find(c => c.id === selectedCategory)?.name}`}
+                    {dataLoading
+                        ? 'טוען את הקטלוג...'
+                        : showFavorites
+                            ? 'הספרים המועדפים שלך'
+                            : `נמצאו ${filteredBooks.length} ספרים`}
+                    {locationFilter.color && ` · ${locationFilter.color}`}
+                    {locationFilter.letter && ` · אות ${locationFilter.letter}`}
+                    {locationFilter.number && ` · מספר ${locationFilter.number}`}
                 </h3>
 
                 {/* רשת ספרים */}
                 {filteredBooks.length > 0 ? (
+                    <>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        {filteredBooks.map(book => (
+                        {visibleBooks.map(book => (
                             <BookCard
                                 key={book.id}
                                 book={book}
@@ -314,6 +324,18 @@ const BookCatalog = ({ books, setBooks, user, categories, onBooksChange }) => {
                             />
                         ))}
                     </div>
+                    {visibleCount < filteredBooks.length && (
+                        <div className="mt-6 text-center">
+                            <button
+                                type="button"
+                                onClick={() => setVisibleCount((count) => count + 48)}
+                                className="min-h-11 rounded-xl border border-stone-300 px-5 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100"
+                            >
+                                הצג עוד ({filteredBooks.length - visibleCount} נוספים)
+                            </button>
+                        </div>
+                    )}
+                    </>
                 ) : (
                     <div className="text-center py-12">
                         <Book className="mx-auto text-gray-400 mb-4" size={64} />

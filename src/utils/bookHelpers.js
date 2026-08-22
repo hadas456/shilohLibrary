@@ -54,19 +54,32 @@ export const formatBookLocation = (location) => {
 };
 
 /**
- * סינון ספרים לפי חיפוש, קטגוריה ומועדפים
+ * סינון ספרים לפי חיפוש, קטגוריה, מועדפים ומיקום בקטלוג
  */
-export const filterBooks = (books, searchQuery, selectedCategory, showFavorites, favorites) => {
+export const filterBooks = (
+    books,
+    searchQuery,
+    selectedCategory,
+    showFavorites,
+    favorites,
+    locationFilter = {}
+) => {
+    const { color = '', letter = '', number = '' } = locationFilter;
+
     return books.filter(book => {
         const matchesSearch = !searchQuery ||
-            book.title.includes(searchQuery) ||
-            book.author.includes(searchQuery) ||
-            book.description.includes(searchQuery);
+            (book.title || '').includes(searchQuery) ||
+            (book.author || '').includes(searchQuery) ||
+            (book.description || '').includes(searchQuery);
 
         const matchesCategory = !selectedCategory || book.category === selectedCategory;
         const matchesFavorites = !showFavorites || favorites.has(book.id);
+        const matchesColor = !color || book.location?.color === color;
+        const matchesLetter = !letter || book.location?.letter === letter;
+        const matchesNumber = !number || book.location?.number === number;
 
-        return matchesSearch && matchesCategory && matchesFavorites;
+        return matchesSearch && matchesCategory && matchesFavorites &&
+            matchesColor && matchesLetter && matchesNumber;
     });
 };
 

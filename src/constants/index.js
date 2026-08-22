@@ -16,12 +16,15 @@ export const initialCategories = [
 // ימות השבוע בעברית
 export const weekdays = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳"];
 
+export const DEFAULT_LOAN_DAYS = 30;
+export const MAX_LOAN_DAYS = 90;
+
 // הודעות ברירת מחדל
 export const defaultAnnouncements = [
     {
         id: "1",
         title: "ברוכים הבאים למערכת החדשה!",
-        message: "המערכת מושדרה עם לוח שנה עברי מלא וחגים יהודיים אוטומטיים + קטלוג ספרים דיגיטלי",
+        message: "המערכת משודרגת עם לוח שנה עברי מלא וחגים יהודיים אוטומטיים + קטלוג ספרים דיגיטלי",
         type: "success",
         createdAt: new Date().toISOString(),
         createdBy: "מנהל המערכת"
