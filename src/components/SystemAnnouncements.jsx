@@ -73,12 +73,14 @@ export default function SystemAnnouncements() {
         }
     };
 
-    const handleDelete = async (announcementId) => {
+    const handleDelete = async (announcement) => {
+        if (!announcement) return;
         if (!confirm("האם אתה בטוח שברצונך למחוק את ההודעה?")) return;
 
         setLoading(true);
         try {
-            await deleteAnnouncement(announcementId);
+            await deleteAnnouncement(announcement.id, announcement);
+            setCurrentIndex(0);
         } catch (error) {
             console.error('שגיאה במחיקת הודעה:', error);
         } finally {
@@ -265,7 +267,13 @@ export default function SystemAnnouncements() {
 
                                {/* כפתור מחיקה למנהל */}
                                 {user.role === 'admin' && (
-                                    <button onClick={() => handleDelete(currentAnnouncement.id)} disabled={loading} className="p-1.5 rounded-lg text-red-600 hover:text-red-800 hover:bg-white/50 transition-colors">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(currentAnnouncement)}
+                                        disabled={loading}
+                                        aria-label="מחיקת הודעת מערכת"
+                                        className="p-1.5 rounded-lg text-red-600 hover:text-red-800 hover:bg-white/50 transition-colors"
+                                    >
                                         <Trash2 className="w-4 h-4" />
                                     </button>
                                 )}

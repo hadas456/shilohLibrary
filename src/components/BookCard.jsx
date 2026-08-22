@@ -1,12 +1,10 @@
 // src/components/BookCard.jsx - עם ניווט משופר בין תמונות
 import React, { useState } from 'react';
-import { User, MapPin, Bell, Edit2, Trash2, Heart, ArrowRight, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { User, MapPin, Bell, Edit2, Trash2, ArrowRight, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getStatusColor, getStatusText, getCategoryColor, formatBookLocation } from '../utils/bookHelpers';
 
 const BookCard = ({
     book,
-    favorites,
-    toggleFavorite,
     setSelectedBook,
     user,
     onEditBook,
@@ -21,11 +19,6 @@ const BookCard = ({
     // קבלת מערך התמונות (תאימות לאחור)
     const images = book.images && book.images.length > 0 ? book.images :
         book.image ? [book.image] : ['/api/placeholder/200/250'];
-
-    const handleFavoriteClick = (e) => {
-        e.stopPropagation();
-        toggleFavorite(book.id);
-    };
 
     const handleEditClick = (e) => {
         e.stopPropagation();
@@ -126,20 +119,10 @@ const BookCard = ({
 
                 {/* אינדיקטור בקשות השאלה למנהלים */}
                 {user?.role === 'admin' && hasRequests && (
-                    <div className="absolute top-2 right-12 bg-red-500 text-white rounded-full min-w-[24px] h-6 flex items-center justify-center text-xs font-bold animate-pulse z-10">
+                    <div className="absolute top-2 right-2 bg-red-500 text-white rounded-full min-w-[24px] h-6 flex items-center justify-center text-xs font-bold animate-pulse z-10">
                         {pendingRequests.length}
                     </div>
                 )}
-
-                {/* כפתור מועדפים */}
-                <button
-                    onClick={handleFavoriteClick}
-                    className={`absolute top-2 right-2 p-2 rounded-full z-10 ${favorites.has(book.id) ? 'bg-red-500 text-white' : 'bg-white text-gray-600'
-                        } hover:scale-110 transition-transform shadow-lg backdrop-blur-sm`}
-                    title={favorites.has(book.id) ? 'הסר מהמועדפים' : 'הוסף למועדפים'}
-                >
-                    <Heart size={16} fill={favorites.has(book.id) ? 'white' : 'none'} />
-                </button>
 
                 {/* תג קטגוריה */}
                 <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs text-white z-10 backdrop-blur-sm shadow-lg bg-${getCategoryColor(book.category, categories)}-500`}>

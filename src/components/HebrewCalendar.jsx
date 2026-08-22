@@ -4,6 +4,7 @@ import {
   fmtGregShort,
   toISODateKey,
   startOfDay,
+  isEventInPast,
   monthMatrix,
   getHebrewDate,
   formatHebrewDateTraditional,
@@ -18,6 +19,7 @@ import {
 import { weekdays } from '../constants';
 import EventCreateModal from './EventCreateModal';
 import { useLibrary } from '../context/LibraryContext';
+import { isCalendarEventVisible } from '../utils/dbHelpers';
 
 export default function HebrewCalendar() {
   const { user, events, deleteEvent: onDeleteEvent } = useLibrary();
@@ -44,15 +46,7 @@ export default function HebrewCalendar() {
     if (!user) return map;
 
     for (const ev of events) {
-      if (ev.isPersonal && ev.userId !== (user.id || user.username)) {
-        continue;
-      }
-
-      if (ev.forAdminsOnly && user.role !== 'admin') {
-        continue;
-      }
-
-      if (ev.userId && ev.userId !== (user.id || user.username) && user.role !== 'admin') {
+      if (!isCalendarEventVisible(ev, user)) {
         continue;
       }
 
@@ -196,14 +190,21 @@ export default function HebrewCalendar() {
                       </div>
 
                       <div className="space-y-0.5">
-                        {dayEvents.slice(0, holidays.length > 0 ? 1 : 2).map((ev) => (
+                        {dayEvents.slice(0, holidays.length > 0 ? 1 : 2).map((ev) => {
+                          const past = isEventInPast(ev);
+                          return (
                           <div
                             key={ev.id}
-                            className="truncate rounded-md px-1.5 py-0.5 text-[9px] border bg-emerald-100 border-emerald-200 text-emerald-800"
+                            className={`truncate rounded-md px-1.5 py-0.5 text-[9px] border ${
+                              past
+                                ? 'bg-stone-100 border-stone-200 text-stone-500'
+                                : 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                            }`}
                           >
-                            {ev.time ? `${ev.time} ` : ''}{ev.title}
+                            {past ? 'עבר · ' : ''}{ev.time ? `${ev.time} ` : ''}{ev.title}
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </button>
                   );
@@ -272,24 +273,44 @@ export default function HebrewCalendar() {
                   </li>
                 ))}
 
-                {(eventsByKey.get(toISODateKey(selected)) || []).map((ev) => (
-                  <li key={ev.id} className="rounded-xl border border-stone-200 p-3 bg-white">
-                    <div className="flex items-start justify-between">
+                {(eventsByKey.get(toISODateKey(selected)) || []).map((ev) => {
+                  const past = isEventInPast(ev);
+                  return (
+                  <li
+                    key={ev.id}
+                    className={`rounded-xl border p-3 ${
+                      past ? 'border-stone-200 bg-stone-50' : 'border-stone-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <div className="text-sm font-medium">{ev.title}</div>
+                        <div className="flex items-center gap-2">
+                          <div className={`text-sm font-medium ${past ? 'text-stone-500' : ''}`}>{ev.title}</div>
+                          {past && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-200 text-stone-600">
+                              עבר
+                            </span>
+                          )}
+                        </div>
                         {ev.time && <div className="text-xs text-stone-500">{ev.time}</div>}
+                        {ev.description && (
+                          <div className="text-xs text-stone-500 mt-1 whitespace-pre-line">{ev.description}</div>
+                        )}
                       </div>
                       {user.role === 'admin' && (
                         <button
+                          type="button"
                           onClick={() => onDeleteEvent(ev.id)}
                           className="text-red-600 hover:text-red-800 p-1"
+                          aria-label="מחיקת אירוע"
                         >
                           ×
                         </button>
                       )}
                     </div>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </div>
           </div>

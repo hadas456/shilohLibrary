@@ -20,6 +20,7 @@ import {
     parseCsv,
     rowsToObjects
 } from '../sheetCatalog';
+import { getDeletedSheetKeys } from './books';
 
 const SYNC_COLLECTION = 'settings';
 const SYNC_DOC = 'sheetSync';
@@ -248,21 +249,26 @@ async function syncLocalBooks(existingBooks, incomingBooks, onProgress) {
 export async function syncBooksFromSheet({ onProgress } = {}) {
     const rows = await fetchSheetCatalogRows();
     const incomingBooks = mapSheetRows(rows);
-    const existingBooks = await loadExistingBooks();
+    const [existingBooks, deletedKeys] = await Promise.all([
+        loadExistingBooks(),
+        getDeletedSheetKeys()
+    ]);
+    const deleted = new Set(deletedKeys);
+    const syncableBooks = incomingBooks.filter((book) => !deleted.has(book.sheetKey));
 
-    onProgress?.(0, incomingBooks.length);
+    onProgress?.(0, syncableBooks.length);
 
     let created = 0;
     let updated = 0;
     let unchanged = 0;
 
     if (!isFirebaseEnabled) {
-        ({ created, updated, unchanged } = await syncLocalBooks(existingBooks, incomingBooks, onProgress));
+        ({ created, updated, unchanged } = await syncLocalBooks(existingBooks, syncableBooks, onProgress));
     } else {
         const byKey = indexExistingBooks(existingBooks);
         const operations = [];
 
-        for (const incoming of incomingBooks) {
+        for (const incoming of syncableBooks) {
             const existing = byKey.get(incoming.sheetKey);
             if (!existing) {
                 operations.push({
@@ -292,7 +298,7 @@ export async function syncBooksFromSheet({ onProgress } = {}) {
         if (operations.length > 0) {
             await commitBatches(operations, onProgress);
         } else {
-            onProgress?.(incomingBooks.length, incomingBooks.length);
+            onProgress?.(syncableBooks.length, syncableBooks.length);
         }
     }
 

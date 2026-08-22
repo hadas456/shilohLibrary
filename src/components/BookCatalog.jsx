@@ -1,6 +1,6 @@
 // src/components/BookCatalog.jsx
 import React, { useState, useEffect } from 'react';
-import { Book, Search, Heart, Plus, RefreshCw, Bell } from 'lucide-react';
+import { Book, Search, Plus, RefreshCw, Bell } from 'lucide-react';
 import BookCard from './BookCard';
 import BookDetail from './BookDetail';
 import { filterBooks } from '../utils/bookHelpers';
@@ -22,26 +22,11 @@ const BookCatalog = ({ onViewChange }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [locationFilter, setLocationFilter] = useState({ color: '', letter: '', number: '' });
     const [selectedBook, setSelectedBook] = useState(null);
-    const [favorites, setFavorites] = useState(new Set());
-    const [showFavorites, setShowFavorites] = useState(false);
     const [editingBook, setEditingBook] = useState(null);
     const [showBookEditor, setShowBookEditor] = useState(false);
     const [loanRequests, setLoanRequests] = useState([]);
     const [loadingRequests, setLoadingRequests] = useState(false);
     const [visibleCount, setVisibleCount] = useState(48);
-
-    // Initialize favorites from localStorage
-    useEffect(() => {
-        const savedFavorites = localStorage.getItem('libraryFavorites');
-        if (savedFavorites) {
-            setFavorites(new Set(JSON.parse(savedFavorites)));
-        }
-    }, []);
-
-    // Save favorites to localStorage
-    useEffect(() => {
-        localStorage.setItem('libraryFavorites', JSON.stringify([...favorites]));
-    }, [favorites]);
 
     // טעינת בקשות השאלה לאדמין
     useEffect(() => {
@@ -67,25 +52,15 @@ const BookCatalog = ({ onViewChange }) => {
         books,
         searchQuery,
         '',
-        showFavorites,
-        favorites,
+        false,
+        new Set(),
         locationFilter
     );
     const visibleBooks = filteredBooks.slice(0, visibleCount);
 
     useEffect(() => {
         setVisibleCount(48);
-    }, [searchQuery, locationFilter, showFavorites]);
-
-    const toggleFavorite = (bookId) => {
-        const newFavorites = new Set(favorites);
-        if (newFavorites.has(bookId)) {
-            newFavorites.delete(bookId);
-        } else {
-            newFavorites.add(bookId);
-        }
-        setFavorites(newFavorites);
-    };
+    }, [searchQuery, locationFilter]);
 
     // פונקציה לקבלת בקשות לספר מסוים
     const getBookRequests = (bookId) => {
@@ -140,14 +115,10 @@ const BookCatalog = ({ onViewChange }) => {
     const handleDeleteBook = async (bookId) => {
         if (confirm('האם אתה בטוח שברצונך למחוק את הספר? פעולה זו לא ניתנת לביטול.')) {
             try {
-                await deleteBook(bookId);
-                setBooks(prev => prev.filter(book => book.id !== bookId));
+                const book = books.find((item) => item.id === bookId);
+                await deleteBook(bookId, { sheetKey: book?.sheetKey });
+                setBooks(prev => prev.filter(item => item.id !== bookId));
                 setSelectedBook(null);
-
-                // הסרה מהמועדפים אם קיים
-                const newFavorites = new Set(favorites);
-                newFavorites.delete(bookId);
-                setFavorites(newFavorites);
 
                 console.log('ספר נמחק בהצלחה');
             } catch (error) {
@@ -245,14 +216,6 @@ const BookCatalog = ({ onViewChange }) => {
                             </button>
                         </>
                     )}
-                    <button
-                        onClick={() => setShowFavorites(!showFavorites)}
-                        className={`px-4 py-2 rounded-lg ${showFavorites ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-700'
-                            } hover:opacity-80 transition-opacity`}
-                    >
-                        <Heart size={16} className="inline ml-2" />
-                        מועדפים ({favorites.size})
-                    </button>
                 </div>
             </div>
 
@@ -296,9 +259,7 @@ const BookCatalog = ({ onViewChange }) => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     {dataLoading
                         ? 'טוען את הקטלוג...'
-                        : showFavorites
-                            ? 'הספרים המועדפים שלך'
-                            : `נמצאו ${filteredBooks.length} ספרים`}
+                        : `נמצאו ${filteredBooks.length} ספרים`}
                     {locationFilter.color && ` · ${locationFilter.color}`}
                     {locationFilter.letter && ` · אות ${locationFilter.letter}`}
                     {locationFilter.number && ` · מספר ${locationFilter.number}`}
@@ -312,8 +273,6 @@ const BookCatalog = ({ onViewChange }) => {
                             <BookCard
                                 key={book.id}
                                 book={book}
-                                favorites={favorites}
-                                toggleFavorite={toggleFavorite}
                                 setSelectedBook={setSelectedBook}
                                 // user={user}
                                 onEditBook={handleEditBook}
@@ -349,8 +308,6 @@ const BookCatalog = ({ onViewChange }) => {
             {selectedBook && (
                 <BookDetail
                     book={selectedBook}
-                    favorites={favorites}
-                    toggleFavorite={toggleFavorite}
                     onClose={() => setSelectedBook(null)}
                     user={user}
                     onEditBook={handleEditBook}

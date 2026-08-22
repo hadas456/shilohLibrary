@@ -4,8 +4,6 @@ import {
     getDocs,
     addDoc,
     deleteDoc,
-    query,
-    orderBy,
     serverTimestamp
 } from 'firebase/firestore';
 
@@ -13,15 +11,30 @@ import { db, isFirebaseEnabled } from '../firebase';
 import { getUsers } from './users';
 import { getBooks } from './books';
 
-export const getEvents = async () => {
-    if (!isFirebaseEnabled) {
+function readLocalEvents() {
+    try {
         const saved = localStorage.getItem('libraryEvents');
         return saved ? JSON.parse(saved) : [];
+    } catch {
+        return [];
+    }
+}
+
+function writeLocalEvents(events) {
+    try {
+        localStorage.setItem('libraryEvents', JSON.stringify(events));
+    } catch (error) {
+        console.warn('לא ניתן לשמור אירועים מקומית:', error);
+    }
+}
+
+export const getEvents = async () => {
+    if (!isFirebaseEnabled) {
+        return readLocalEvents();
     }
 
     try {
-        const q = query(collection(db, 'events'), orderBy('date', 'desc'));
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, 'events'));
         const events = [];
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
@@ -31,24 +44,25 @@ export const getEvents = async () => {
                 date: data.date?.toDate ? data.date.toDate().toISOString() : data.date
             });
         });
+        events.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        writeLocalEvents(events);
         return events;
     } catch (error) {
         console.error('שגיאה בטעינת אירועים:', error);
-        const saved = localStorage.getItem('libraryEvents');
-        return saved ? JSON.parse(saved) : [];
+        return readLocalEvents();
     }
 };
 
 export const addEvent = async (eventData) => {
     if (!isFirebaseEnabled) {
-        const events = await getEvents();
+        const events = readLocalEvents();
         const newEvent = {
             id: Date.now().toString(),
             ...eventData,
             createdAt: new Date().toISOString()
         };
         events.unshift(newEvent);
-        localStorage.setItem('libraryEvents', JSON.stringify(events));
+        writeLocalEvents(events);
         return newEvent;
     }
 
@@ -57,7 +71,9 @@ export const addEvent = async (eventData) => {
             ...eventData,
             createdAt: serverTimestamp()
         });
-        return { id: docRef.id, ...eventData };
+        const created = { id: docRef.id, ...eventData };
+        writeLocalEvents([created, ...readLocalEvents().filter((event) => event.id !== created.id)]);
+        return created;
     } catch (error) {
         console.error('שגיאה בהוספת אירוע:', error);
         throw error;
@@ -118,32 +134,52 @@ export const getEventIcon = (eventType) => {
     return eventTypeConfig ? eventTypeConfig.icon : '📅';
 };
 
+const ADMIN_ONLY_TYPES = new Set([
+    'admin_tracking',
+    'admin_loan_tracking',
+    'admin_book_tracking',
+    'overdue_alert'
+]);
+
+const PERSONAL_EVENT_TYPES = new Set([
+    'book_return',
+    'book_loan',
+    'personal'
+]);
+
+export function getEventType(event) {
+    return event?.type || event?.eventType || '';
+}
+
+export function isPublicLibraryEvent(event) {
+    if (!event || event.forAdminsOnly) return false;
+
+    const type = getEventType(event);
+    if (ADMIN_ONLY_TYPES.has(type) || PERSONAL_EVENT_TYPES.has(type)) return false;
+    if (type === 'admin_event' || type === 'admin_public' || type === 'book_borrow') return true;
+    if (event.isPersonal === false) return true;
+    if (!type && event.title && !event.bookId && !event.loanRequestId) return true;
+    return false;
+}
+
+export function isCalendarEventVisible(event, user) {
+    if (!event || !user) return false;
+
+    const type = getEventType(event);
+    if (event.forAdminsOnly || ADMIN_ONLY_TYPES.has(type)) {
+        return user.role === 'admin';
+    }
+
+    if (isPublicLibraryEvent(event) || user.role === 'admin') {
+        return true;
+    }
+
+    const uid = user.id || user.username;
+    return event.userId === uid || event.bookOwnerId === uid || event.createdBy === uid;
+}
+
 export const isEventVisibleToUser = (event, userId, userRole) => {
-    const eventTypeConfig = Object.values(EVENT_TYPES).find(
-        config => config.type === event.type
-    );
-
-    if (!eventTypeConfig) {
-        return false;
-    }
-
-    switch (eventTypeConfig.visibility) {
-        case 'all':
-            return true;
-
-        case 'owner_and_admin':
-            return userRole === 'admin' ||
-                event.userId === userId ||
-                event.bookOwnerId === userId;
-
-        case 'creator_and_admin':
-            return userRole === 'admin' ||
-                event.createdBy === userId ||
-                event.userId === userId;
-
-        default:
-            return false;
-    }
+    return isCalendarEventVisible(event, { id: userId, username: userId, role: userRole });
 };
 
 export const filterEventsByVisibility = (events, userId, userRole) => {

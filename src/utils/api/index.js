@@ -11,7 +11,8 @@ export {
     getBooks,
     addBook,
     updateBook,
-    deleteBook
+    deleteBook,
+    getDeletedSheetKeys
 } from './books';
 
 export {
@@ -24,7 +25,9 @@ export {
 export {
     getAnnouncements,
     addAnnouncement,
-    deleteAnnouncement
+    deleteAnnouncement,
+    getDeletedAnnouncements,
+    filterDeletedAnnouncements
 } from './announcements';
 
 export {
@@ -36,6 +39,8 @@ export {
     getEventColor,
     getEventIcon,
     isEventVisibleToUser,
+    isCalendarEventVisible,
+    isPublicLibraryEvent,
     filterEventsByVisibility,
     createEventWithType,
     createReturnEvent,

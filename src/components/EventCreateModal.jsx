@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import TimePicker from './TimePicker';
 import { fmtHebDate } from '../utils/dateHelpers';
-import { addEvent } from '../utils/dbHelpers';
+import { useLibrary } from '../context/LibraryContext';
 
 export default function EventCreateModal({
   open,
@@ -10,6 +10,7 @@ export default function EventCreateModal({
   user,
   onClose
 }) {
+  const { addEvent } = useLibrary();
   const [newEvent, setNewEvent] = useState({ title: '', description: '', time: '' });
   const [loading, setLoading] = useState(false);
 
@@ -39,9 +40,12 @@ export default function EventCreateModal({
         date: selectedDate.toISOString(),
         createdAt: new Date().toISOString(),
         createdBy: user.name,
-        userId: user.id || user.username,
-        isPersonal: true,
-        eventType: 'book_borrow'
+        createdById: user.id || user.username,
+        type: 'admin_event',
+        eventType: 'admin_event',
+        visibility: 'all',
+        isPersonal: false,
+        forAdminsOnly: false
       });
       handleClose();
     } catch (error) {

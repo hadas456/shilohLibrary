@@ -5,8 +5,12 @@ import {
   getAnnouncements,
   getEvents,
   getUsers,
+  getDeletedSheetKeys,
+  getDeletedAnnouncements,
+  filterDeletedAnnouncements,
   addAnnouncement as addAnnouncementApi,
   deleteAnnouncement as deleteAnnouncementApi,
+  addEvent as addEventApi,
   deleteEvent as deleteEventApi,
   subscribeToCollection,
   initializeDefaultData
@@ -14,7 +18,6 @@ import {
 import { db, isFirebaseEnabled } from '../utils/firebase';
 import {
   initialCategories,
-  defaultAnnouncements,
   localModeAnnouncement
 } from '../constants';
 import { loadPublishedSheetBooks, mergeCatalogBooks } from '../utils/sheetCatalog';
@@ -38,13 +41,14 @@ export function LibraryProvider({ children }) {
       try {
         await initializeDefaultData();
 
-        const [booksData, categoriesData, announcementsData, eventsData, usersData] =
+        const [booksData, categoriesData, announcementsData, eventsData, usersData, deletedKeys] =
           await Promise.all([
             getBooks(),
             getCategories(),
             getAnnouncements(),
             getEvents(),
-            getUsers()
+            getUsers(),
+            getDeletedSheetKeys()
           ]);
 
         let sheetBooks = [];
@@ -56,11 +60,9 @@ export function LibraryProvider({ children }) {
 
         if (cancelled) return;
 
-        setBooks(mergeCatalogBooks(sheetBooks, booksData));
+        setBooks(mergeCatalogBooks(sheetBooks, booksData, deletedKeys));
         setCategories(categoriesData.length > 0 ? categoriesData : initialCategories);
-        setAnnouncements(
-          announcementsData.length > 0 ? announcementsData : defaultAnnouncements
-        );
+        setAnnouncements(announcementsData);
         setEvents(eventsData);
         setUsers(usersData);
       } catch (error) {
@@ -88,16 +90,22 @@ export function LibraryProvider({ children }) {
 
     const unsubscribers = [
       subscribeToCollection('books', (storedBooks) => {
-        setBooks((current) => {
-          const sheetBooks = current.filter((book) => book.source === 'google-sheets');
-          return mergeCatalogBooks(sheetBooks, storedBooks);
+        getDeletedSheetKeys().then((deletedKeys) => {
+          setBooks((current) => {
+            const sheetBooks = current.filter((book) => book.source === 'google-sheets');
+            return mergeCatalogBooks(sheetBooks, storedBooks, deletedKeys);
+          });
         });
       }),
       subscribeToCollection('categories', (data) => {
         setCategories(data.length > 0 ? data : initialCategories);
       }),
       subscribeToCollection('events', setEvents),
-      subscribeToCollection('announcements', setAnnouncements),
+      subscribeToCollection('announcements', (data) => {
+        getDeletedAnnouncements().then((deleted) => {
+          setAnnouncements(filterDeletedAnnouncements(data, deleted));
+        });
+      }),
       subscribeToCollection('users', setUsers)
     ];
 
@@ -115,13 +123,30 @@ export function LibraryProvider({ children }) {
 
   const logout = () => setUser(null);
 
+  const addEvent = async (eventData) => {
+    try {
+      const created = await addEventApi(eventData);
+      if (created) {
+        setEvents((prev) => {
+          if (prev.some((event) => String(event.id) === String(created.id))) {
+            return prev;
+          }
+          return [created, ...prev];
+        });
+      }
+      return created;
+    } catch (error) {
+      console.error('שגיאה בהוספת אירוע:', error);
+      alert(`שגיאה בשמירת האירוע: ${error.message}`);
+      throw error;
+    }
+  };
+
   const deleteEvent = async (eventId) => {
     if (!confirm('האם אתה בטוח שברצונך למחוק את האירוע?')) return;
     try {
       await deleteEventApi(eventId);
-      if (!isFirebaseEnabled) {
-        setEvents((prev) => prev.filter((event) => event.id !== eventId));
-      }
+      setEvents((prev) => prev.filter((event) => event.id !== eventId));
     } catch (error) {
       console.error('שגיאה במחיקת אירוע:', error);
       alert(`שגיאה במחיקת האירוע: ${error.message}`);
@@ -142,16 +167,17 @@ export function LibraryProvider({ children }) {
     }
   };
 
-  const deleteAnnouncement = async (announcementId) => {
+  const deleteAnnouncement = async (announcementId, announcement) => {
     try {
-      await deleteAnnouncementApi(announcementId);
-      if (!isFirebaseEnabled) {
-        setAnnouncements((prev) =>
-          prev.filter((announcement) => announcement.id !== announcementId)
-        );
-      }
+      await deleteAnnouncementApi(announcementId, announcement);
+      setAnnouncements((prev) =>
+        prev.filter((item) => String(item.id) !== String(announcementId))
+      );
     } catch (error) {
       console.error('שגיאה במחיקת הודעה:', error);
+      setAnnouncements((prev) =>
+        prev.filter((item) => String(item.id) !== String(announcementId))
+      );
       alert(`שגיאה במחיקת ההודעה: ${error.message}`);
       throw error;
     }
@@ -173,6 +199,7 @@ export function LibraryProvider({ children }) {
       users,
       setUsers,
       dataLoading,
+      addEvent,
       deleteEvent,
       addAnnouncement,
       deleteAnnouncement,

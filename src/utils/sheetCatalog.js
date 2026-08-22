@@ -281,15 +281,21 @@ export function toCatalogBook(incoming) {
     };
 }
 
-export function mergeCatalogBooks(sheetBooks, storedBooks = []) {
+export function mergeCatalogBooks(sheetBooks, storedBooks = [], deletedKeys = []) {
+    const deleted = new Set((deletedKeys || []).filter(Boolean));
     const byKey = new Map();
 
     for (const book of sheetBooks) {
-        if (book?.sheetKey) byKey.set(book.sheetKey, book);
+        if (book?.sheetKey && !deleted.has(book.sheetKey)) {
+            byKey.set(book.sheetKey, book);
+        }
     }
 
     const extras = [];
     for (const book of storedBooks) {
+        if (book?.sheetKey && deleted.has(book.sheetKey)) {
+            continue;
+        }
         if (book?.sheetKey && byKey.has(book.sheetKey)) {
             byKey.set(book.sheetKey, { ...byKey.get(book.sheetKey), ...book });
         } else {

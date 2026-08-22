@@ -6,6 +6,7 @@ import FirebaseStatus from './FirebaseStatus';
 import AdminContactMessages from './AdminContactMessages';
 import SheetSyncPanel from './SheetSyncPanel';
 import { useLibrary } from '../context/LibraryContext';
+import { isEventInPast, parseEventDate } from '../utils/dateHelpers';
 
 const dummyMessages = [
   {
@@ -163,23 +164,56 @@ export default function AdminPanel() {
             <h3 className="font-medium">ניהול אירועים</h3>
           </div>
           <div className="space-y-4">
-            <div className="max-h-60 overflow-y-auto space-y-2">
-              {events.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-center justify-between p-3 border border-stone-200 rounded-lg"
-                >
-                  <div className="flex-1">
-                    <div className="text-sm font-medium">{event.title}</div>
-                    <div className="text-xs text-stone-500">
-                      {new Date(event.date).toLocaleDateString('he-IL')}
-                    </div>
-                  </div>
-                  <button onClick={() => deleteEvent(event.id)} className="text-red-600 p-2">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+            <div className="max-h-96 overflow-y-auto space-y-2">
+              {events.length === 0 && (
+                <div className="text-sm text-stone-500 text-center py-8">
+                  אין אירועים במערכת. אפשר להוסיף אירוע מלוח השנה.
                 </div>
-              ))}
+              )}
+              {[...events]
+                .sort((a, b) => {
+                  const aPast = isEventInPast(a);
+                  const bPast = isEventInPast(b);
+                  if (aPast !== bPast) return aPast ? 1 : -1;
+                  return (parseEventDate(b)?.getTime() || 0) - (parseEventDate(a)?.getTime() || 0);
+                })
+                .map((event) => {
+                  const past = isEventInPast(event);
+                  const eventDate = parseEventDate(event);
+                  return (
+                    <div
+                      key={event.id}
+                      className={`flex items-center justify-between p-3 border rounded-lg ${
+                        past ? 'border-stone-200 bg-stone-50' : 'border-stone-200'
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div className={`text-sm font-medium ${past ? 'text-stone-500' : ''}`}>
+                            {event.title}
+                          </div>
+                          {past && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-200 text-stone-600">
+                              עבר
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-stone-500">
+                          {eventDate ? eventDate.toLocaleDateString('he-IL') : 'ללא תאריך'}
+                          {event.time ? ` · ${event.time}` : ''}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => deleteEvent(event.id)}
+                        className="text-red-600 p-2"
+                        aria-label="מחיקת אירוע"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </div>

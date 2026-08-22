@@ -65,6 +65,28 @@ export function startOfDay(date) {
     return d;
 }
 
+export function parseEventDate(event) {
+    if (!event?.date) return null;
+    if (typeof event.date?.toDate === 'function') return event.date.toDate();
+    const parsed = new Date(event.date);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+export function isEventInPast(event, now = new Date()) {
+    const date = parseEventDate(event);
+    if (!date) return false;
+
+    const end = new Date(date);
+    const timeMatch = String(event.time || '').match(/^(\d{1,2}):(\d{2})/);
+    if (timeMatch) {
+        end.setHours(Number(timeMatch[1]), Number(timeMatch[2]), 0, 0);
+    } else {
+        end.setHours(23, 59, 59, 999);
+    }
+
+    return end.getTime() < now.getTime();
+}
+
 export function endOfDay(date) {
     const d = new Date(date);
     d.setHours(23, 59, 59, 999);

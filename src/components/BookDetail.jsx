@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Edit2, Trash2, Heart, FileText, MapPin, Bell, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Edit2, Trash2, FileText, MapPin, Bell, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getStatusColor, getStatusText, getCategoryColor } from '../utils/bookHelpers';
 import {
     addLoanRequest,
@@ -15,8 +15,6 @@ import { addDays, getLoanReturnBounds } from '../utils/dateHelpers';
 
 const BookDetail = ({
     book,
-    favorites,
-    toggleFavorite,
     onClose,
     user,
     onEditBook,
@@ -359,16 +357,6 @@ const BookDetail = ({
                                         </div>
                                     </div>
                                 </div>
-
-                                <button
-                                    onClick={() => toggleFavorite(book.id)}
-                                    className={`p-2 md:p-3 rounded-full transition-all ${favorites.has(book.id)
-                                        ? 'bg-red-500 text-white hover:bg-red-600'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    <Heart size={20} fill={favorites.has(book.id) ? 'white' : 'none'} />
-                                </button>
                             </div>
 
                             {/* תיאור הספר */}
