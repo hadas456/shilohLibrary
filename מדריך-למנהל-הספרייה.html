@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>מדריך למנהל הספרייה — ספריית שִׁלֹה</title>
+  <style>
+    :root {
+      --green: #047857;
+      --green-dark: #065f46;
+      --green-soft: #ecfdf5;
+      --stone: #44403c;
+      --muted: #78716c;
+      --line: #e7e5e4;
+      --paper: #fafaf9;
+      --white: #ffffff;
+      --amber: #fffbeb;
+      --amber-line: #fde68a;
+      --blue: #eff6ff;
+      --red-soft: #fef2f2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--stone);
+      background: var(--paper);
+      font-family: "Heebo", "Assistant", "Segoe UI", "David", "Arial", sans-serif;
+      line-height: 1.7;
+      font-size: 17px;
+    }
+
+    .wrap {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+    }
+
+    header.cover {
+      background: linear-gradient(135deg, #065f46 0%, #047857 55%, #0f766e 100%);
+      color: white;
+      border-radius: 28px;
+      padding: 40px 36px;
+      margin-bottom: 28px;
+      box-shadow: 0 16px 40px rgba(6, 95, 70, 0.18);
+    }
+
+    header.cover .kicker {
+      opacity: 0.85;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    header.cover h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.25;
+    }
+
+    header.cover p {
+      margin: 0;
+      max-width: 36em;
+      opacity: 0.95;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    button, .btn {
+      appearance: none;
+      border: 0;
+      background: white;
+      color: var(--green-dark);
+      font: inherit;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .toc, section.card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 28px 28px 8px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--green-dark);
+      font-size: 24px;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 19px;
+      color: #1c1917;
+    }
+
+    p { margin: 0 0 14px; }
+
+    ol, ul { margin: 0 0 16px; padding-right: 22px; }
+    li { margin-bottom: 6px; }
+
+    a { color: var(--green); }
+
+    .toc ol { padding-right: 22px; }
+    .toc a { text-decoration: none; font-weight: 600; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 18px;
+      font-size: 15.5px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: right;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    .note, .warn, .tip {
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin: 0 0 16px;
+    }
+
+    .note { background: var(--blue); border: 1px solid #bfdbfe; }
+    .warn { background: var(--amber); border: 1px solid var(--amber-line); }
+    .tip { background: var(--green-soft); border: 1px solid #a7f3d0; }
+
+    .note strong, .warn strong, .tip strong { display: block; margin-bottom: 4px; }
+
+    .kbd {
+      display: inline-block;
+      background: #f5f5f4;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1px 8px;
+      font-weight: 700;
+      font-size: 0.95em;
+    }
+
+    .flow {
+      display: grid;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      align-items: start;
+      background: #fafaf9;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--green);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    @media print {
+      body { background: white; font-size: 13px; }
+      .wrap { max-width: none; padding: 0; }
+      header.cover { box-shadow: none; border-radius: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .toolbar { display: none; }
+      section.card, .toc { break-inside: avoid; box-shadow: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="cover">
+      <div class="kicker">ספריית ישיבת שילה</div>
+      <h1>מדריך שימוש באתר הספרייה</h1>
+      <p>מדריך מעשי למנהל הספרייה: התחברות, משתמשים לדוגמה, מייל ייעודי לניהול, הוספת ספרים ומשתמשים, אישור השאלות והחזרות, וכל שאר הפעולות באתר.</p>
+      <div class="toolbar">
+        <button type="button" onclick="window.print()">הדפסה / שמירה כ־PDF</button>
+      </div>
+    </header>
+
+    <nav class="toc" id="toc">
+      <h2>תוכן העניינים</h2>
+      <ol>
+        <li><a href="#about">מה יש באתר</a></li>
+        <li><a href="#login">התחברות ומשתמשים לדוגמה</a></li>
+        <li><a href="#email">מייל ייעודי לניהול</a></li>
+        <li><a href="#roles">סוגי משתמשים והרשאות</a></li>
+        <li><a href="#nav">מסכי האתר</a></li>
+        <li><a href="#add-book">איך מוסיפים ספר</a></li>
+        <li><a href="#edit-book">עריכה ומחיקה של ספר</a></li>
+        <li><a href="#sheet">ייבוא הספרים מגוגל שיטס</a></li>
+        <li><a href="#add-user">איך מוסיפים משתמש</a></li>
+        <li><a href="#manage-user">עריכה, השבתה ומחיקה של משתמש</a></li>
+        <li><a href="#loan">השאלת ספר — מהמשתמש ועד האישור</a></li>
+        <li><a href="#return">החזרת ספר</a></li>
+        <li><a href="#search">חיפוש בקטלוג</a></li>
+        <li><a href="#calendar">לוח שנה ואירועים</a></li>
+        <li><a href="#announcements">הודעות מערכת</a></li>
+        <li><a href="#categories">ניהול קטגוריות</a></li>
+        <li><a href="#messages">פניות משתמשים</a></li>
+        <li><a href="#alerts">הודעות בפעמון</a></li>
+        <li><a href="#status">משמעות סטטוס הספר</a></li>
+        <li><a href="#tips">טיפים חשובים</a></li>
+      </ol>
+    </nav>
+
+    <section class="card" id="about">
+      <h2>1. מה יש באתר</h2>
+      <p>אתר <strong>ספריית שִׁלֹה</strong> הוא מערכת לניהול הספרייה: קטלוג ספרים, בקשות השאלה והחזרה, לוח שנה עברי עם חגים, אירועים והודעות.</p>
+      <ul>
+        <li>תלמידים ואורחים מתחברים כמשתמשים רגילים, מחפשים ספר ומבקשים להשאיל.</li>
+        <li>מנהל הספרייה מאשר או דוחה בקשות, מוסיף ספרים ומשתמשים, ומנהל את הקטלוג.</li>
+        <li>רשימת הספרים הראשית מגיעה מקטלוג גוגל שיטס של הישיבה, ואפשר גם להוסיף ספר ידנית.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="login">
+      <h2>2. התחברות ומשתמשים לדוגמה</h2>
+      <p>במסך הכניסה ממלאים <strong>שם משתמש</strong> ו<strong>סיסמה</strong> ולוחצים <span class="kbd">התחברות</span>.</p>
+      <div class="warn">
+        <strong>שימו לב</strong>
+        אחרי רענון של העמוד צריך להתחבר שוב. היציאה נעשית בכפתור <span class="kbd">יציאה</span> בפינה השמאלית של הסרגל העליון.
+      </div>
+
+      <h3>חשבונות לתרגול</h3>
+      <p>אלה חשבונות לדוגמה לבדיקה ולהדרכה. מומלץ לא להשאיר אותם כחשבונות קבועים של הספרייה — לכל תלמיד יוצרים משתמש משלו.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>שם משתמש</th>
+            <th>סיסמה</th>
+            <th>שם מלא</th>
+            <th>תפקיד</th>
+            <th>למה משמש</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td dir="ltr">admin</td>
+            <td dir="ltr">admin123</td>
+            <td>מנהל ראשי</td>
+            <td>מנהל מערכת</td>
+            <td>כל פעולות הניהול: ספרים, משתמשים, אישור השאלות</td>
+          </tr>
+          <tr>
+            <td dir="ltr">user</td>
+            <td dir="ltr">user123</td>
+            <td>משתמש להדגמה</td>
+            <td>משתמש רגיל</td>
+            <td>תרגול חיפוש ספר, בקשת השאלה והחזרה</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <strong>אם החשבונות האלה לא עובדים באתר החי</strong>
+        הם נוצרים אוטומטית רק במצב מקומי. באתר המחובר לשרת צריך ליצור אותם פעם אחת דרך <strong>ניהול → ניהול משתמשים → הוסף משתמש חדש</strong>, או להשתמש בחשבון מנהל שכבר קיים.
+      </div>
+    </section>
+
+    <section class="card" id="email">
+      <h2>3. מייל ייעודי לניהול</h2>
+      <p>נפתח חשבון ג׳ימייל ייעודי לספרייה. דרכו מנהלים את המייל של הספרייה, את קטלוג גוגל שיטס, וכל פעולה שקשורה לחשבון גוגל של הספרייה.</p>
+      <p>זה <strong>לא</strong> שם המשתמש של האתר. לאתר נכנסים עם <span dir="ltr">admin</span> / <span dir="ltr">user1</span>. למייל נכנסים ב-<a href="https://mail.google.com" target="_blank" rel="noopener">mail.google.com</a>.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>שדה</th>
+            <th>ערך</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>כתובת מייל</td>
+            <td dir="ltr">yeshivat.shiloh.sifria@gmail.com</td>
+          </tr>
+          <tr>
+            <td>סיסמה</td>
+            <td dir="ltr">tenwuf-beptar-Qirva2</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="warn">
+        <strong>לשמירה על החשבון</strong>
+        הסיסמה מיועדת למנהל הספרייה בלבד. לא לשתף אותה עם תלמידים. אם מחליפים סיסמה בגוגל — לעדכן גם במדריך הזה.
+      </div>
+    </section>
+
+    <section class="card" id="roles">
+      <h2>4. סוגי משתמשים והרשאות</h2>
+      <p>יש שני תפקידים בלבד:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>תפקיד באתר</th>
+            <th>מי זה בדרך כלל</th>
+            <th>מה אפשר לעשות</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>מנהל / מנהל מערכת</td>
+            <td>מנהל הספרייה או ספרן</td>
+            <td>הכול: קטלוג, הוספת ספרים, ניהול משתמשים, אישור השאלות והחזרות, אירועים, הודעות, פניות וסנכרון השיטס</td>
+          </tr>
+          <tr>
+            <td>משתמש רגיל</td>
+            <td>תלמיד / אורח</td>
+            <td>לוח שנה, חיפוש בקטלוג, בקשת השאלה, צפייה ב«הספרים שלי», בקשת החזרה, שליחת פנייה</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>משתמש שסומן כ<strong>לא פעיל</strong> לא יכול להתחבר. תופיע ההודעה: «המשתמש אינו פעיל».</p>
+    </section>
+
+    <section class="card" id="nav">
+      <h2>5. מסכי האתר</h2>
+      <p>המעבר בין המסכים הוא מהסרגל העליון. אין כתובות נפרדות לכל עמוד.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>כפתור</th>
+            <th>מי רואה</th>
+            <th>מה יש שם</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>לוח שנה</td>
+            <td>כולם</td>
+            <td>לוח עברי ולועזי, חגים, שבת, ואירועי הספרייה</td>
+          </tr>
+          <tr>
+            <td>קטלוג ספרים</td>
+            <td>כולם</td>
+            <td>חיפוש ועיון בספרים. למנהל גם הוספה, עריכה ומחיקה</td>
+          </tr>
+          <tr>
+            <td>הספרים שלי</td>
+            <td>משתמש רגיל בלבד</td>
+            <td>ספרים מושאלים, מועד החזרה, בקשת החזרה</td>
+          </tr>
+          <tr>
+            <td>ניהול השאלות</td>
+            <td>מנהל בלבד</td>
+            <td>אישור או דחייה של בקשות השאלה והחזרה</td>
+          </tr>
+          <tr>
+            <td>ניהול</td>
+            <td>מנהל בלבד</td>
+            <td>משתמשים, קטגוריות, אירועים, הודעות, פניות וסנכרון השיטס</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>בצד שמאל מופיעים שם המשתמש, פעמון <span class="kbd">הודעות</span>, וכפתור <span class="kbd">יציאה</span>. לחיצה על השם פותחת את כרטיס הפרופיל.</p>
+    </section>
+
+    <section class="card" id="add-book">
+      <h2>6. איך מוסיפים ספר</h2>
+      <p>יש שתי דרכים: הוספה ידנית של ספר בודד, או ייבוא כל הקטלוג מגוגל שיטס (מומלץ לקטלוג הגדול).</p>
+
+      <h3>הוספה ידנית של ספר אחד</h3>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>התחברו כמנהל. לחצו <span class="kbd">קטלוג ספרים</span>.</div></div>
+        <div class="step"><div class="num">2</div><div>לחצו <span class="kbd">הוסף ספר חדש</span>.</div></div>
+        <div class="step"><div class="num">3</div><div>מלאו את הטופס «הוספת ספר חדש» ולחצו <span class="kbd">הוסף ספר</span>.</div></div>
+      </div>
+
+      <h3>שדות חובה</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>שדה</th>
+            <th>מה למלא</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>שם הספר</td><td>חובה</td></tr>
+          <tr><td>שם המחבר</td><td>חובה</td></tr>
+          <tr><td>קטגוריה</td><td>בחירה מהרשימה, למשל תנ״ך ותורה, הלכה, מחשבה ומוסר</td></tr>
+          <tr>
+            <td>מיקום הספר</td>
+            <td>צבע, אות ומספר לפי קטלוג ישיבת שילה. לדוגמה: תכלת א 1. הצבעים במערכת: תכלת, אדום, ירוק, צהוב, כתום</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>שדות רשות</h3>
+      <ul>
+        <li><strong>תיאור</strong> — כמה מילים על הספר.</li>
+        <li><strong>תמונות הספר</strong> — עד 5 תמונות.</li>
+        <li><strong>סטטוס</strong> — בדרך כלל משאירים <strong>זמין</strong>.</li>
+      </ul>
+      <div class="note">
+        <strong>מה אין בטופס הידני</strong>
+        אין שדה ISBN או ברקוד בהוספה ידנית. פרטים כמו הוצאה, שנה ומספר עותק מגיעים בעיקר מקטלוג גוגל שיטס.
+      </div>
+    </section>
+
+    <section class="card" id="edit-book">
+      <h2>7. עריכה ומחיקה של ספר</h2>
+      <ol>
+        <li>בקטלוג לוחצים על הספר.</li>
+        <li>למנהל מופיעים כפתורי עריכה ומחיקה.</li>
+        <li>בעריכה אפשר לשנות את אותם שדות כמו בהוספה, ואז ללחוץ <span class="kbd">שמור שינויים</span>.</li>
+      </ol>
+      <div class="warn">
+        <strong>מחיקת ספר שמגיע מהשיטס</strong>
+        אם מוחקים ספר שיובא מהשיטס, המערכת זוכרת אותו ולא תייבא אותו שוב בסנכרון הבא.
+      </div>
+    </section>
+
+    <section class="card" id="sheet">
+      <h2>8. ייבוא הספרים מגוגל שיטס</h2>
+      <p>רוב הספרים מגיעים מקטלוג הישיבה בגוגל שיטס. הסנכרון רץ פעם ביום אוטומטית כשנכנסים לפאנל הניהול.</p>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>לחצו <span class="kbd">ניהול</span>.</div></div>
+        <div class="step"><div class="num">2</div><div>בכרטיסייה <span class="kbd">סקירה כללית</span> מצאו את «סנכרון מגוגל שיטס».</div></div>
+        <div class="step"><div class="num">3</div><div>לחצו <span class="kbd">ייבא את הספרים</span> בפעם הראשונה, או <span class="kbd">סנכרן עכשיו</span> לאחר מכן.</div></div>
+      </div>
+      <div class="tip">
+        <strong>מה הסנכרון לא דורס</strong>
+        השאלות פעילות, סטטוס הספר באתר ותמונות שכבר הועלו — נשמרים. מתעדכנים בעיקר פרטי הקטלוג: שם, מחבר, מיקום, הערות וכו'.
+      </div>
+    </section>
+
+    <section class="card" id="add-user">
+      <h2>9. איך מוסיפים משתמש</h2>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>התחברו כמנהל. לחצו <span class="kbd">ניהול</span>.</div></div>
+        <div class="step"><div class="num">2</div><div>לחצו <span class="kbd">ניהול משתמשים</span>.</div></div>
+        <div class="step"><div class="num">3</div><div>לחצו <span class="kbd">הוסף משתמש חדש</span>.</div></div>
+        <div class="step"><div class="num">4</div><div>מלאו את הטופס ולחצו <span class="kbd">צור משתמש חדש</span>.</div></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>שדה</th>
+            <th>חובה?</th>
+            <th>כללים</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>שם משתמש (באנגלית)</td>
+            <td>כן</td>
+            <td>אותיות באנגלית בלבד, בלי רווחים. לדוגמה: <span dir="ltr">moshe</span></td>
+          </tr>
+          <tr>
+            <td>סיסמה</td>
+            <td>כן</td>
+            <td>אפשר להציג או להסתיר עם סמל העין</td>
+          </tr>
+          <tr>
+            <td>שם מלא</td>
+            <td>כן</td>
+            <td>אותיות בעברית ורווחים בלבד. לדוגמה: משה כהן</td>
+          </tr>
+          <tr>
+            <td>תפקיד</td>
+            <td>כן</td>
+            <td><strong>משתמש רגיל</strong> לתלמיד, או <strong>מנהל מערכת</strong> לספרן נוסף</td>
+          </tr>
+          <tr>
+            <td>טלפון</td>
+            <td>לא</td>
+            <td>ספרות בלבד, עד 10. אם ממלאים — המשתמש חייב להשתמש באותו מספר בבקשת השאלה</td>
+          </tr>
+          <tr>
+            <td>אימייל</td>
+            <td>לא</td>
+            <td>אם ממלאים, חייב להיות תקין. לדוגמה: name@domain.com</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>דוגמה למילוי משתמש חדש</h3>
+      <table>
+        <thead>
+          <tr><th>שדה</th><th>ערך לדוגמה</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>שם משתמש</td><td dir="ltr">yaakov</td></tr>
+          <tr><td>סיסמה</td><td dir="ltr">Yaakov2026</td></tr>
+          <tr><td>שם מלא</td><td>יעקב לוי</td></tr>
+          <tr><td>תפקיד</td><td>משתמש רגיל</td></tr>
+          <tr><td>טלפון</td><td dir="ltr">0521234567</td></tr>
+          <tr><td>אימייל</td><td dir="ltr">yaakov@example.com</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="manage-user">
+      <h2>10. עריכה, השבתה ומחיקה של משתמש</h2>
+      <p>ברשימת המשתמשים לכל אדם יש שלוש פעולות:</p>
+      <ul>
+        <li><strong>השבת / הפעל</strong> — משתמש מושבת לא יכול להתחבר. משתמשים בזה כשמישהו עוזב או כשרוצים להשהות גישה בלי למחוק.</li>
+        <li><strong>עריכה</strong> — שינוי שם, תפקיד, טלפון, אימייל, או הזנת סיסמה חדשה (אופציונלי).</li>
+        <li><strong>מחיקה</strong> — מוחק את המשתמש לצמיתות. אי אפשר למחוק את החשבון שבו אתם מחוברים כרגע.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="loan">
+      <h2>11. השאלת ספר — מהמשתמש ועד האישור</h2>
+      <p>ההשאלה היא בקשה שמחכה לאישור הספרן. הספר לא עובר אוטומטית למשתמש.</p>
+
+      <h3>מה המשתמש עושה</h3>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>נכנס ל<span class="kbd">קטלוג ספרים</span> ולוחץ על ספר שסטטוסו <strong>זמין</strong>.</div></div>
+        <div class="step"><div class="num">2</div><div>לוחץ <span class="kbd">בקש השאלת ספר</span>.</div></div>
+        <div class="step"><div class="num">3</div><div>ממלא טלפון ליצירת קשר (חובה), תאריך החזרה והערות אם צריך.</div></div>
+        <div class="step"><div class="num">4</div><div>לוחץ <span class="kbd">שלח בקשה</span>.</div></div>
+      </div>
+      <ul>
+        <li>ברירת המחדל להחזרה: <strong>30 יום</strong>.</li>
+        <li>אפשר עד <strong>90 יום</strong>.</li>
+        <li>אם יש טלפון בכרטיס המשתמש — חייבים להזין בדיוק אותו מספר.</li>
+        <li>אחרי השליחה הספר עובר לסטטוס <strong>בעיבוד</strong>, והמנהל מקבל הודעה.</li>
+      </ul>
+
+      <h3>מה המנהל עושה</h3>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>נכנס ל<span class="kbd">ניהול השאלות</span> (או פותח את הספר מהקטלוג אם יש בקשה ממתינה).</div></div>
+        <div class="step"><div class="num">2</div><div>בודק את פרטי המבקש, הטלפון, המיקום ותאריך ההחזרה.</div></div>
+        <div class="step"><div class="num">3</div><div>אפשר לכתוב <strong>הערות אדמין</strong> שיישלחו למשתמש.</div></div>
+        <div class="step"><div class="num">4</div><div>לוחץ <span class="kbd">אשר השאלה</span> או <span class="kbd">דחה</span>.</div></div>
+      </div>
+      <ul>
+        <li><strong>אישור</strong> — הספר הופך ל<strong>מושאל</strong>, נוצרים אירועים בלוח השנה, והמשתמש מקבל הודעה.</li>
+        <li><strong>דחייה</strong> — הספר חוזר ל<strong>זמין</strong> (אם אין בקשות אחרות לאותו ספר).</li>
+        <li>אם כמה אנשים ביקשו את אותו ספר, האישור של אחד דוחה אוטומטית את השאר, עם ההודעה «הספר הושאל למשתמש אחר».</li>
+      </ul>
+    </section>
+
+    <section class="card" id="return">
+      <h2>12. החזרת ספר</h2>
+      <h3>מצד המשתמש</h3>
+      <ol>
+        <li>נכנס ל<span class="kbd">הספרים שלי</span>.</li>
+        <li>לוחץ <span class="kbd">בקש החזרה</span> ומאשר.</li>
+        <li>הספר עובר ל<strong>ממתין לאישור החזרה</strong>.</li>
+      </ol>
+
+      <h3>מצד המנהל</h3>
+      <ol>
+        <li>נכנס ל<span class="kbd">ניהול השאלות</span>.</li>
+        <li>בחלק <strong>בקשות החזרה ממתינות לאישור</strong> לוחץ <span class="kbd">אשר החזרה</span>.</li>
+        <li>הספר חוזר ל<strong>זמין</strong> והמשתמש מקבל הודעה.</li>
+      </ol>
+
+      <p>ב«הספרים שלי» המשתמש רואה גם כמה ימים נשארו, אם יש להחזיר היום, או אם יש איחור.</p>
+    </section>
+
+    <section class="card" id="search">
+      <h2>13. חיפוש בקטלוג</h2>
+      <ul>
+        <li>תיבת החיפוש: «חפש ספרים, מחברים או נושאים...» — מחפשת בשם הספר, במחבר ובתיאור.</li>
+        <li>סינון לפי מיקום: <strong>צבע</strong>, <strong>אות</strong>, <strong>מספר</strong>. כפתור <span class="kbd">נקה סינון</span> מבטל הכול.</li>
+        <li>מוצגים בהתחלה 48 ספרים. אפשר ללחוץ <span class="kbd">הצג עוד</span>.</li>
+        <li>על כל כרטיס מופיעים הסטטוס והמיקום, למשל «תכלת א1».</li>
+      </ul>
+    </section>
+
+    <section class="card" id="calendar">
+      <h2>14. לוח שנה ואירועים</h2>
+      <p>לוח השנה מציג תאריכים עבריים, חגים ושבתות אוטומטית. מנהל יכול להוסיף אירוע של הספרייה.</p>
+      <div class="flow">
+        <div class="step"><div class="num">1</div><div>ב<span class="kbd">לוח שנה</span> בחרו תאריך.</div></div>
+        <div class="step"><div class="num">2</div><div>לחצו <span class="kbd">הוספת אירוע חדש</span>.</div></div>
+        <div class="step"><div class="num">3</div><div>מלאו <strong>כותרת</strong> (חובה), <strong>שעה</strong> אם יש, ו<strong>תיאור</strong>.</div></div>
+        <div class="step"><div class="num">4</div><div>לחצו <span class="kbd">שמור אירוע</span>.</div></div>
+      </div>
+      <p>אפשר למחוק אירוע מהיום עצמו בלוח, או מ<span class="kbd">ניהול → ניהול אירועים</span>.</p>
+    </section>
+
+    <section class="card" id="announcements">
+      <h2>15. הודעות מערכת</h2>
+      <p>הודעות המערכת מופיעות בראש האתר ומתחלפות לבד כל כמה שניות.</p>
+      <ol>
+        <li>לחצו <span class="kbd">הוספת הודעה</span> ליד באנר ההודעות.</li>
+        <li>מלאו <strong>כותרת הודעה</strong> (חובה) ו<strong>תוכן</strong>.</li>
+        <li>בחרו סוג: <strong>מידע</strong> (כחול), <strong>אזהרה</strong> (צהוב), או <strong>הודעה חיובית</strong> (ירוק).</li>
+        <li>לחצו <span class="kbd">פרסם הודעה</span>.</li>
+      </ol>
+      <p>רשימת ההודעות נמצאת גם ב<span class="kbd">ניהול → ניהול הודעות</span>. מחיקה נעשית מהבאנר עצמו.</p>
+    </section>
+
+    <section class="card" id="categories">
+      <h2>16. ניהול קטגוריות</h2>
+      <p>ב<span class="kbd">ניהול → ניהול קטגוריות</span> אפשר להוסיף, לערוך ולמחוק קטגוריות לספרים.</p>
+      <p>קטגוריות ברירת המחדל: תנ״ך ותורה, נביאים וכתובים, מדרשים, משניות וגמרא, הלכה, שו״ת, תפילה וחסידות, מחשבה ומוסר, היסטוריה.</p>
+      <p>בהוספה ממלאים שם ובוחרים צבע, ואז לוחצים <span class="kbd">הוסף קטגוריה</span>.</p>
+    </section>
+
+    <section class="card" id="messages">
+      <h2>17. פניות משתמשים</h2>
+      <p>משתמש רגיל רואה בתחתית האתר טופס יצירת קשר. הפניות מגיעות למנהל ב<span class="kbd">ניהול → פניות משתמשים</span>.</p>
+      <ul>
+        <li>פנייה חדשה מסומנת <strong>חדש</strong>.</li>
+        <li>אפשר לסמן <strong>טופל</strong> או למחוק.</li>
+      </ul>
+      <p>פרטי קשר שמופיעים באתר: משרד הישיבה 02-9942130, Office@yshilo.co.il.</p>
+    </section>
+
+    <section class="card" id="alerts">
+      <h2>18. הודעות בפעמון</h2>
+      <p>סמל הפעמון בראש האתר מציג הודעות פנימיות, למשל בקשת השאלה חדשה או אישור השאלה.</p>
+      <ul>
+        <li>סינון: <strong>הכל</strong>, <strong>לא נקראו</strong>, <strong>נקראו</strong>.</li>
+        <li>אפשר לסמן הכול כנקרא, למחוק הודעות שנקראו, או לפתוח פרטי הודעה.</li>
+      </ul>
+    </section>
+
+    <section class="card" id="status">
+      <h2>19. משמעות סטטוס הספר</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>סטטוס באתר</th>
+            <th>מה זה אומר</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>זמין</td><td>אפשר לבקש השאלה</td></tr>
+          <tr><td>בעיבוד</td><td>יש בקשת השאלה שמחכה לאישור</td></tr>
+          <tr><td>מושאל</td><td>הספר אצל משתמש</td></tr>
+          <tr><td>ממתין לאישור החזרה</td><td>המשתמש ביקש להחזיר, מחכים לאישור הספרן</td></tr>
+          <tr><td>תחזוקה</td><td>הספר לא להשאלה כרגע</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card" id="tips">
+      <h2>20. טיפים חשובים</h2>
+      <ul>
+        <li>התחילו תמיד כמנהל כשצריך לאשר בקשות או להוסיף נתונים. כדי לראות איך התלמיד חווה את האתר — התחברו בחשבון <span dir="ltr">user1</span>.</li>
+        <li>המייל של הספרייה: <span dir="ltr">yeshivat.shiloh.sifria@gmail.com</span>. נכנסים אליו בגוגל, לא במסך ההתחברות של האתר.</li>
+        <li>לכל תלמיד כדאי ליצור משתמש משלו, עם טלפון אמיתי. כך בקשות ההשאלה מגיעות עם פרטי קשר נכונים.</li>
+        <li>אל תאשרו השאלה לפני שבדקתם שהספר באמת על המדף.</li>
+        <li>אם הקטלוג חסר או לא מעודכן — הריצו <span class="kbd">סנכרן עכשיו</span> מתוך ניהול.</li>
+        <li>אין באתר רשימת המתנה נפרדת. אם כמה אנשים ביקשו את אותו ספר, המנהל בוחר למי לאשר.</li>
+        <li>אין באתר הגדרה של שעות פתיחה. את זה מעדכנים בהודעת מערכת או בפנייה ישירה.</li>
+      </ul>
+    </section>
+
+    <footer>
+      מדריך למנהל הספרייה · ספריית שִׁלֹה · אוגוסט 2026
+    </footer>
+  </div>
+</body>
+</html>
