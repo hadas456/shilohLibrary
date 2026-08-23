@@ -186,33 +186,35 @@ const BookCatalog = ({ onViewChange }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* כותרת וכפתורים */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                    <h2 className="text-2xl font-semibold text-gray-900">קטלוג ספרים</h2>
-                    <p className="text-gray-600 mt-1">חפש וגלה ספרים בספריית שִׁלֹה</p>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">קטלוג ספרים</h2>
+                    <p className="text-sm sm:text-base text-gray-600 mt-1">חפש וגלה ספרים בספריית שִׁלֹה</p>
                     {user?.role === 'admin' && loadingRequests && (
                         <p className="text-sm text-blue-600">טוען בקשות השאלה...</p>
                     )}
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                     {user.role === 'admin' && (
                         <>
                             <button
                                 onClick={handleAddBook}
-                                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
                             >
                                 <Plus size={16} />
-                                הוסף ספר חדש
+                                <span className="hidden sm:inline">הוסף ספר חדש</span>
+                                <span className="sm:hidden">הוסף ספר</span>
                             </button>
                             <button
                                 onClick={loadLoanRequests}
                                 disabled={loadingRequests}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 text-sm"
                             >
                                 <RefreshCw size={16} className={loadingRequests ? "animate-spin" : ""} />
-                                רענן בקשות
+                                <span className="hidden sm:inline">רענן בקשות</span>
+                                <span className="sm:hidden">רענן</span>
                             </button>
                         </>
                     )}
@@ -224,12 +226,12 @@ const BookCatalog = ({ onViewChange }) => {
                 <button
                     type="button"
                     onClick={() => onViewChange?.('returns')}
-                    className="w-full bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-right hover:bg-yellow-100 transition-colors"
+                    className="w-full bg-yellow-50 border border-yellow-200 rounded-lg p-3 sm:p-4 text-right hover:bg-yellow-100 transition-colors"
                 >
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
                         <div className="flex items-center gap-2">
-                            <Bell className="w-5 h-5 text-yellow-600" />
-                            <span className="font-medium text-yellow-800">
+                            <Bell className="w-5 h-5 text-yellow-600 flex-shrink-0" />
+                            <span className="font-medium text-yellow-800 text-sm sm:text-base">
                                 יש {loanRequests.filter(r => r.status === 'pending').length} בקשות השאלה ממתינות לאישור
                             </span>
                         </div>
@@ -247,16 +249,16 @@ const BookCatalog = ({ onViewChange }) => {
                     placeholder="חפש ספרים, מחברים או נושאים..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                    className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-sm sm:text-base"
                 />
-                <Search className="absolute right-4 top-3.5 text-gray-400" size={20} />
+                <Search className="absolute right-4 top-3 sm:top-3.5 text-gray-400" size={18} />
             </div>
 
             <CatalogSearchFilters value={locationFilter} onChange={setLocationFilter} />
 
             {/* תוצאות */}
             <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <h3 className="text-sm sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">
                     {dataLoading
                         ? 'טוען את הקטלוג...'
                         : `נמצאו ${filteredBooks.length} ספרים`}
@@ -268,7 +270,7 @@ const BookCatalog = ({ onViewChange }) => {
                 {/* רשת ספרים */}
                 {filteredBooks.length > 0 ? (
                     <>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
                         {visibleBooks.map(book => (
                             <BookCard
                                 key={book.id}

@@ -73,38 +73,38 @@ export default function HebrewCalendar() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="lg:col-span-2 space-y-6">
-          <div className="rounded-3xl overflow-hidden border border-stone-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-8">
-            <h2 className="text-2xl font-semibold mb-2">ברוך הבא {user.name}</h2>
-            <p className="text-stone-700 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <section className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-semibold mb-2">ברוך הבא {user.name}</h2>
+            <p className="text-stone-700 mb-4 text-sm sm:text-base">
               {user.role === 'admin'
                 ? 'כאן תוכל לנהל אוספים, אירועים ולוח השנה היהודי. יש לך גישה מלאה לכלל הפונקציות.'
                 : 'כאן תוכל לראות את לוח השנה היהודי עם חגים, אירועים ותאריכים עבריים.'}
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {user.role === 'admin' && (
                 <button
-                  className="rounded-2xl px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800"
+                  className="rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800 text-sm"
                   onClick={() => setPanelOpen(true)}
                 >
                   הוספת אירוע חדש
                 </button>
               )}
               <button
-                className="rounded-2xl px-4 py-2 border border-stone-300 hover:bg-stone-100"
+                className="rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 border border-stone-300 hover:bg-stone-100 text-sm"
                 onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
               >
                 חודש קודם
               </button>
               <button
-                className="rounded-2xl px-4 py-2 border border-stone-300 hover:bg-stone-100"
+                className="rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 border border-stone-300 hover:bg-stone-100 text-sm"
                 onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
               >
                 חודש הבא
               </button>
               <button
-                className="rounded-2xl px-4 py-2 border border-stone-300 hover:bg-stone-100"
+                className="rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 border border-stone-300 hover:bg-stone-100 text-sm"
                 onClick={() => setCursor(startOfDay(new Date()))}
               >
                 היום
@@ -112,28 +112,26 @@ export default function HebrewCalendar() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-stone-200 bg-white overflow-hidden mx-4 md:mx-8 shadow-lg">
-            <div className="flex items-start justify-between gap-4 px-4 sm:px-6 py-4 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-teal-50">
-              {/* RTL: ימין = עברי — תשפ״ו ל׳ אב */}
+          <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white overflow-hidden mx-0 sm:mx-4 md:mx-8 shadow-lg">
+            <div className="flex items-start justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-stone-200 bg-gradient-to-r from-emerald-50 to-teal-50">
               <div className="text-right">
-                <div className="text-lg font-semibold text-stone-800">{headerHeb}</div>
+                <div className="text-sm sm:text-lg font-semibold text-stone-800">{headerHeb}</div>
               </div>
-              {/* RTL: שמאל = לועזי — 13 באוגוסט 2026 */}
               <div className="text-left">
-                <div className="text-lg font-semibold text-stone-800">{headerGreg}</div>
+                <div className="text-sm sm:text-lg font-semibold text-stone-800">{headerGreg}</div>
               </div>
             </div>
 
-            <div className="p-4 md:p-6">
+            <div className="p-2 sm:p-4 md:p-6">
               <div className="grid grid-cols-7 gap-px bg-stone-200 rounded-lg overflow-hidden">
                 {weekdays.map((d) => (
-                  <div key={d} className="bg-stone-50 text-center text-xs font-medium py-3">
+                  <div key={d} className="bg-stone-50 text-center text-[10px] sm:text-xs font-medium py-2 sm:py-3">
                     {d}
                   </div>
                 ))}
               </div>
 
-              <div className="grid grid-cols-7 gap-px bg-stone-200 mt-2 rounded-lg overflow-hidden">
+              <div className="grid grid-cols-7 gap-px bg-stone-200 mt-1 sm:mt-2 rounded-lg overflow-hidden">
                 {grid.map(({ date, inCurrent }, idx) => {
                   const isToday = toISODateKey(date) === toISODateKey(today);
                   const isSelected = toISODateKey(date) === toISODateKey(selected);
@@ -151,7 +149,7 @@ export default function HebrewCalendar() {
                       key={idx}
                       onClick={() => setSelected(startOfDay(date))}
                       className={[
-                        'relative min-h-[120px] bg-white p-2 text-right transition-all hover:bg-stone-50',
+                        'relative min-h-[60px] sm:min-h-[90px] md:min-h-[120px] bg-white p-1 sm:p-2 text-right transition-all hover:bg-stone-50',
                         inCurrent ? '' : 'bg-stone-50 text-stone-400',
                         isSelected ? 'ring-2 ring-emerald-600 z-10 bg-emerald-50' : '',
                         isToday ? 'outline outline-2 outline-emerald-500' : '',
@@ -159,21 +157,21 @@ export default function HebrewCalendar() {
                         isFridayDay ? 'bg-yellow-50 border-r-2 border-yellow-300' : ''
                       ].join(' ')}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-lg font-bold text-stone-800">{dayGreg}</span>
-                          <span className="text-sm text-blue-600 font-medium">{dayHebrewLetter}</span>
+                      <div className="flex items-center justify-between mb-0.5 sm:mb-2">
+                        <div className="flex items-baseline gap-0.5 sm:gap-1">
+                          <span className="text-sm sm:text-lg font-bold text-stone-800">{dayGreg}</span>
+                          <span className="text-[10px] sm:text-sm text-blue-600 font-medium">{dayHebrewLetter}</span>
                         </div>
-                        {isToday && <span className="text-xs text-emerald-600 font-bold">היום</span>}
+                        {isToday && <span className="text-[8px] sm:text-xs text-emerald-600 font-bold">היום</span>}
                       </div>
 
                       {shabbatTimes && (
-                        <div className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded mb-1">
+                        <div className="hidden sm:block text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded mb-1">
                           {shabbatTimes.name} {shabbatTimes.time}
                         </div>
                       )}
 
-                      <div className="space-y-0.5 mb-1">
+                      <div className="space-y-0.5 mb-1 hidden sm:block">
                         {holidays.slice(0, 2).map((holiday) => {
                           const hebrewName = getHebrewHolidayName(holiday.fullEvent);
                           return (
@@ -189,7 +187,17 @@ export default function HebrewCalendar() {
                         })}
                       </div>
 
-                      <div className="space-y-0.5">
+                      {holidays.length > 0 && (
+                        <div className="sm:hidden flex gap-0.5 flex-wrap">
+                          {holidays.slice(0, 2).map((holiday) => (
+                            <span key={holiday.name} className="text-[10px]" title={getHebrewHolidayName(holiday.fullEvent)}>
+                              {holidayTypesHebrew[holiday.type].icon}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="space-y-0.5 hidden sm:block">
                         {dayEvents.slice(0, holidays.length > 0 ? 1 : 2).map((ev) => {
                           const past = isEventInPast(ev);
                           return (
@@ -206,6 +214,12 @@ export default function HebrewCalendar() {
                           );
                         })}
                       </div>
+
+                      {dayEvents.length > 0 && (
+                        <div className="sm:hidden">
+                          <div className="w-2 h-2 bg-emerald-500 rounded-full mx-auto mt-1"></div>
+                        </div>
+                      )}
                     </button>
                   );
                 })}
@@ -214,39 +228,39 @@ export default function HebrewCalendar() {
           </div>
         </section>
 
-        <aside className="space-y-6">
-          <div className="rounded-3xl border border-stone-200 bg-white p-5">
+        <aside className="space-y-4 sm:space-y-6">
+          <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-5">
             <div className="text-sm text-stone-500">תאריך נבחר</div>
-            <div className="mt-1 flex items-start justify-between gap-3">
+            <div className="mt-1 flex items-start justify-between gap-2 sm:gap-3">
               <div className="text-right">
-                <div className="text-lg font-semibold text-stone-800">
+                <div className="text-sm sm:text-lg font-semibold text-stone-800">
                   {formatHebrewDateTraditional(selected)}
                 </div>
               </div>
               <div className="text-left">
-                <div className="text-lg font-semibold text-stone-800">{fmtGregDate.format(selected)}</div>
-                <div className="text-sm text-stone-500">
+                <div className="text-sm sm:text-lg font-semibold text-stone-800">{fmtGregDate.format(selected)}</div>
+                <div className="text-xs sm:text-sm text-stone-500">
                   {selected.toLocaleDateString('he-IL', { weekday: 'long' })}
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 flex gap-2">
+            <div className="mt-3 sm:mt-4 flex gap-2">
               {user.role === 'admin' && (
                 <button
                   onClick={() => setPanelOpen(true)}
-                  className="rounded-2xl px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800"
+                  className="rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 bg-emerald-700 text-white hover:bg-emerald-800 text-sm"
                 >
                   אירוע חדש
                 </button>
               )}
             </div>
 
-            <div className="mt-6">
-              <h3 className="font-medium mb-3">אירועים וחגים בתאריך זה</h3>
+            <div className="mt-4 sm:mt-6">
+              <h3 className="font-medium mb-2 sm:mb-3 text-sm sm:text-base">אירועים וחגים בתאריך זה</h3>
 
-              <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="text-sm text-blue-800 font-medium mb-1">
+              <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="text-xs sm:text-sm text-blue-800 font-medium mb-1">
                   {getHebrewDate(selected)}
                 </div>
                 {getShabbatTimes(selected) && (
@@ -260,12 +274,12 @@ export default function HebrewCalendar() {
                 {(holidaysByKey.get(toISODateKey(selected)) || []).map((holiday) => (
                   <li
                     key={holiday.name}
-                    className={`rounded-xl border p-3 ${holidayTypesHebrew[holiday.type].color}`}
+                    className={`rounded-lg sm:rounded-xl border p-2 sm:p-3 ${holidayTypesHebrew[holiday.type].color}`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{holidayTypesHebrew[holiday.type].icon}</span>
+                      <span className="text-base sm:text-lg">{holidayTypesHebrew[holiday.type].icon}</span>
                       <div className="flex-1">
-                        <div className="text-sm font-medium">
+                        <div className="text-xs sm:text-sm font-medium">
                           {getHebrewHolidayName(holiday.fullEvent)}
                         </div>
                       </div>
@@ -278,14 +292,14 @@ export default function HebrewCalendar() {
                   return (
                   <li
                     key={ev.id}
-                    className={`rounded-xl border p-3 ${
+                    className={`rounded-lg sm:rounded-xl border p-2 sm:p-3 ${
                       past ? 'border-stone-200 bg-stone-50' : 'border-stone-200 bg-white'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start justify-between gap-2 sm:gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <div className={`text-sm font-medium ${past ? 'text-stone-500' : ''}`}>{ev.title}</div>
+                          <div className={`text-xs sm:text-sm font-medium ${past ? 'text-stone-500' : ''}`}>{ev.title}</div>
                           {past && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-stone-200 text-stone-600">
                               עבר
@@ -294,7 +308,7 @@ export default function HebrewCalendar() {
                         </div>
                         {ev.time && <div className="text-xs text-stone-500">{ev.time}</div>}
                         {ev.description && (
-                          <div className="text-xs text-stone-500 mt-1 whitespace-pre-line">{ev.description}</div>
+                          <div className="text-xs text-stone-500 mt-1 whitespace-pre-line line-clamp-2 sm:line-clamp-none">{ev.description}</div>
                         )}
                       </div>
                       {user.role === 'admin' && (

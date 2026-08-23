@@ -59,93 +59,95 @@ export default function AdminPanel() {
   }, [users, books, categories, events, announcements]);
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-3xl border border-stone-200 bg-white p-6">
-        <h2 className="text-2xl font-semibold mb-6">פאנל ניהול מתקדם</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">פאנל ניהול מתקדם</h2>
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'overview' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Settings className="w-4 h-4" />
-            סקירה כללית
-          </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'users' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Users className="w-4 h-4" />
-            ניהול משתמשים
-          </button>
-          <button
-            onClick={() => setActiveTab('categories')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'categories' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Tag className="w-4 h-4" />
-            ניהול קטגוריות
-          </button>
-          <button
-            onClick={() => setActiveTab('events')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'events' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Calendar className="w-4 h-4" />
-            ניהול אירועים
-          </button>
-          <button
-            onClick={() => setActiveTab('announcements')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'announcements' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Bell className="w-4 h-4" />
-            ניהול הודעות
-          </button>
-          <button
-            onClick={() => setActiveTab('messages')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${activeTab === 'messages' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
-          >
-            <Mail className="w-4 h-4" />
-            פניות משתמשים
-          </button>
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 mb-4 sm:mb-6">
+          <div className="flex gap-2 min-w-max sm:flex-wrap">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'overview' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Settings className="w-4 h-4" />
+              סקירה כללית
+            </button>
+            <button
+              onClick={() => setActiveTab('users')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'users' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Users className="w-4 h-4" />
+              משתמשים
+            </button>
+            <button
+              onClick={() => setActiveTab('categories')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'categories' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Tag className="w-4 h-4" />
+              קטגוריות
+            </button>
+            <button
+              onClick={() => setActiveTab('events')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Calendar className="w-4 h-4" />
+              אירועים
+            </button>
+            <button
+              onClick={() => setActiveTab('announcements')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'announcements' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Bell className="w-4 h-4" />
+              הודעות
+            </button>
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${activeTab === 'messages' ? 'bg-blue-600 text-white' : 'border border-stone-300 hover:bg-stone-100'}`}
+            >
+              <Mail className="w-4 h-4" />
+              פניות
+            </button>
+          </div>
         </div>
 
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <h3 className="font-medium text-blue-900">משתמשים</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 sm:p-4 border border-blue-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                <h3 className="font-medium text-blue-900 text-sm sm:text-base">משתמשים</h3>
               </div>
-              <div className="text-2xl font-bold text-blue-900">
+              <div className="text-xl sm:text-2xl font-bold text-blue-900">
                 {dataLoading ? '...' : stats.users}
               </div>
-              <div className="text-sm text-blue-700">
+              <div className="text-xs sm:text-sm text-blue-700">
                 {dataLoading ? 'טוען...' : `${stats.activeUsers} פעילים`}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Book className="w-5 h-5 text-green-600" />
-                <h3 className="font-medium text-green-900">ספרים</h3>
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 sm:p-4 border border-green-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                <Book className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <h3 className="font-medium text-green-900 text-sm sm:text-base">ספרים</h3>
               </div>
-              <div className="text-2xl font-bold text-green-900">
+              <div className="text-xl sm:text-2xl font-bold text-green-900">
                 {dataLoading ? '...' : stats.books}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-4 border border-purple-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="w-5 h-5 text-purple-600" />
-                <h3 className="font-medium text-purple-900">אירועים</h3>
+            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 sm:p-4 border border-purple-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+                <h3 className="font-medium text-purple-900 text-sm sm:text-base">אירועים</h3>
               </div>
-              <div className="text-2xl font-bold text-purple-900">
+              <div className="text-xl sm:text-2xl font-bold text-purple-900">
                 {dataLoading ? '...' : stats.events}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 border border-orange-200">
-              <div className="flex items-center gap-2 mb-2">
-                <Bell className="w-5 h-5 text-orange-600" />
-                <h3 className="font-medium text-orange-900">הודעות</h3>
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-3 sm:p-4 border border-orange-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+                <h3 className="font-medium text-orange-900 text-sm sm:text-base">הודעות</h3>
               </div>
-              <div className="text-2xl font-bold text-orange-900">
+              <div className="text-xl sm:text-2xl font-bold text-orange-900">
                 {dataLoading ? '...' : stats.announcements}
               </div>
             </div>
