@@ -118,13 +118,13 @@ export default function BorrowedBooks({ onBookReturned }) {
 
     if (loading) {
         return (
-            <div className="space-y-6">
-                <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                        <BookOpen className="w-6 h-6 text-blue-600" />
-                        <h2 className="text-2xl font-semibold">הספרים שלי</h2>
+            <div className="space-y-4 sm:space-y-6">
+                <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                        <h2 className="text-lg sm:text-2xl font-semibold">הספרים שלי</h2>
                     </div>
-                    <div className="text-center py-8 text-blue-600">
+                    <div className="text-center py-6 sm:py-8 text-blue-600 text-sm sm:text-base">
                         טוען ספרים מושאלים...
                     </div>
                 </div>
@@ -133,63 +133,63 @@ export default function BorrowedBooks({ onBookReturned }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
             {/* כותרת וסטטיסטיקות */}
-            <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <BookOpen className="w-6 h-6 text-blue-600" />
-                        <h2 className="text-2xl font-semibold">הספרים שלי</h2>
+            <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                        <h2 className="text-lg sm:text-2xl font-semibold">הספרים שלי</h2>
                     </div>
                     <button
                         onClick={loadBorrowedBooks}
                         disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm"
                     >
                         <RotateCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                        רענן
+                        <span className="hidden sm:inline">רענן</span>
                     </button>
                 </div>
 
                 {/* סטטיסטיקות מהירות */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
-                        <div className="text-2xl font-bold text-blue-900">{borrowedBooks.length}</div>
-                        <div className="text-sm text-blue-700">ספרים מושאלים</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-3 sm:p-4 border border-blue-200">
+                        <div className="text-xl sm:text-2xl font-bold text-blue-900">{borrowedBooks.length}</div>
+                        <div className="text-xs sm:text-sm text-blue-700">ספרים מושאלים</div>
                     </div>
-                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
-                        <div className="text-2xl font-bold text-orange-900">
+                    <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-3 sm:p-4 border border-orange-200">
+                        <div className="text-xl sm:text-2xl font-bold text-orange-900">
                             {borrowedBooks.filter(book => {
                                 const { daysLeft } = calculateDaysUntilReturn(book.updatedAt || book.createdAt);
                                 return daysLeft <= 3 && daysLeft >= 0;
                             }).length}
                         </div>
-                        <div className="text-sm text-orange-700">מועד החזרה קרוב</div>
+                        <div className="text-xs sm:text-sm text-orange-700">החזרה קרוב</div>
                     </div>
-                    <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200">
-                        <div className="text-2xl font-bold text-red-900">
+                    <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-3 sm:p-4 border border-red-200">
+                        <div className="text-xl sm:text-2xl font-bold text-red-900">
                             {borrowedBooks.filter(book => {
                                 const { daysLeft } = calculateDaysUntilReturn(book.updatedAt || book.createdAt);
                                 return daysLeft < 0;
                             }).length}
                         </div>
-                        <div className="text-sm text-red-700">באיחור</div>
+                        <div className="text-xs sm:text-sm text-red-700">באיחור</div>
                     </div>
                 </div>
             </div>
 
             {/* רשימת ספרים מושאלים */}
-            <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                <h3 className="text-lg font-semibold mb-4">ספרים שברשותך</h3>
+            <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">ספרים שברשותך</h3>
 
                 {borrowedBooks.length === 0 ? (
-                    <div className="text-center py-12">
-                        <BookOpen className="mx-auto text-gray-400 mb-4" size={64} />
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">אין ספרים מושאלים</h3>
-                        <p className="text-gray-500">כל הספרים שלך הוחזרו או שלא השאלת ספרים עדיין</p>
+                    <div className="text-center py-8 sm:py-12">
+                        <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">אין ספרים מושאלים</h3>
+                        <p className="text-gray-500 text-sm sm:text-base">כל הספרים שלך הוחזרו או שלא השאלת ספרים עדיין</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {borrowedBooks.map(loanRequest => {
                             const bookDetails = getBookDetails(loanRequest.bookId);
                             const { returnDate, daysLeft } = calculateDaysUntilReturn(loanRequest, bookDetails);
@@ -199,31 +199,31 @@ export default function BorrowedBooks({ onBookReturned }) {
                             return (
                                 <div
                                     key={loanRequest.id}
-                                    className="border rounded-xl p-4 transition-all hover:shadow-md"
+                                    className="border rounded-xl p-3 sm:p-4 transition-all hover:shadow-md"
                                 >
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:justify-between">
                                         <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <h4 className="font-semibold text-lg">{loanRequest.bookTitle}</h4>
-                                                <span className={`px-3 py-1 rounded-full text-sm border ${getStatusColor(daysLeft, returnRequested)}`}>
+                                            <div className="flex flex-wrap items-start sm:items-center gap-2 sm:gap-3 mb-2">
+                                                <h4 className="font-semibold text-base sm:text-lg">{loanRequest.bookTitle}</h4>
+                                                <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm border ${getStatusColor(daysLeft, returnRequested)}`}>
                                                     {getStatusText(daysLeft, returnRequested)}
                                                 </span>
                                             </div>
 
-                                            <div className="text-sm text-gray-600 space-y-1">
+                                            <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                                                 {bookDetails && (
                                                     <>
                                                         <div className="flex items-center gap-2">
                                                             <span><strong>מחבר:</strong> {bookDetails.author}</span>
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <MapPin className="w-4 h-4" />
+                                                            <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
                                                             <span><strong>מיקום:</strong> {bookDetails.location.color} {bookDetails.location.letter}{bookDetails.location.number}</span>
                                                         </div>
                                                     </>
                                                 )}
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
+                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     <span><strong>תאריך החזרה:</strong> {returnDate.toLocaleDateString('he-IL')}</span>
                                                 </div>
                                                 <div>
@@ -237,18 +237,18 @@ export default function BorrowedBooks({ onBookReturned }) {
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col gap-2">
-                                            {/* כפתור בקשת החזרה */}
+                                        <div className="flex flex-row sm:flex-col gap-2 mt-2 sm:mt-0">
                                             {!returnRequested ? (
                                                 <button
                                                     onClick={() => handleUserReturnRequest(loanRequest.id, loanRequest.bookId, loanRequest.bookTitle)}
                                                     disabled={isReturning}
-                                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm flex-1 sm:flex-none"
                                                 >
                                                     {isReturning ? (
                                                         <>
                                                             <RotateCcw className="w-4 h-4 animate-spin" />
-                                                            שולח בקשה...
+                                                            <span className="hidden sm:inline">שולח בקשה...</span>
+                                                            <span className="sm:hidden">שולח...</span>
                                                         </>
                                                     ) : (
                                                         <>
@@ -258,7 +258,7 @@ export default function BorrowedBooks({ onBookReturned }) {
                                                     )}
                                                 </button>
                                             ) : (
-                                                <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg">
+                                                <div className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-sm flex-1 sm:flex-none">
                                                     <CheckCircle className="w-4 h-4" />
                                                     החזרה מבוקשת
                                                 </div>
@@ -280,10 +280,9 @@ export default function BorrowedBooks({ onBookReturned }) {
             </div>
 
             {/* הנחיות והערות חשובות */}
-            <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
-                <h3 className="text-lg font-semibold text-blue-800 mb-3">הנחיות חשובות</h3>
-                <div className="text-blue-700 space-y-2 text-sm">
-                    {/* <div>• תקופת השאלה רגילה היא 14 ימים מיום האישור</div> */}
+            <div className="rounded-2xl sm:rounded-3xl border border-blue-200 bg-blue-50 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-blue-800 mb-2 sm:mb-3">הנחיות חשובות</h3>
+                <div className="text-blue-700 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                     <div>• ניתן לבקש החזרה מוקדמת באמצעות הכפתור "בקש החזרה"</div>
                     <div>• בעיכוב החזרה יש להקפיד על החזרה מהירה</div>
                     <div>• לשאלות או הארכת השאלה, פנה לספרן</div>

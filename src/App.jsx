@@ -40,7 +40,7 @@ export default function LibrarySystem() {
         onLogout={logout}
       />
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="mx-auto max-w-6xl px-3 sm:px-4 py-4 sm:py-6">
         {currentView === 'calendar' && <HebrewCalendar />}
 
         {currentView === 'catalog' && (
@@ -62,8 +62,8 @@ export default function LibrarySystem() {
         {user.role !== 'admin' && <ContactSection />}
       </main>
 
-      <footer className="mx-auto max-w-6xl px-4 py-10 text-center text-sm text-stone-500">
-        מערכת ספריית שילה • נבנה ב-React + Firebase • לוח שנה יהודי אוטומטי עם @hebcal/core • ניהול הרשאות מתקדם
+      <footer className="mx-auto max-w-6xl px-3 sm:px-4 py-6 sm:py-10 text-center text-xs sm:text-sm text-stone-500">
+        מערכת ספריית שילה • נבנה ב-React + Firebase • לוח שנה יהודי אוטומטי עם @hebcal/core
       </footer>
     </div>
   );
