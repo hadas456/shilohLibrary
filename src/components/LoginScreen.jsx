@@ -154,7 +154,11 @@ export default function LoginScreen({ onLogin }) {
         <div dir="rtl" className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <div className="w-16 h-16 rounded-3xl bg-emerald-700 flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">סׅל</div>
+                    <img
+                        src="/logo.png"
+                        alt="ספריית שילה"
+                        className="mx-auto mb-4 h-20 w-20 rounded-3xl object-cover bg-[#F5EEE3]"
+                    />
                     <h1 className="text-2xl font-bold text-stone-800 mb-2">ספריית שִׁלֹה</h1>
                     <p className="text-stone-600">התחברות למערכת</p>
                 </div>

@@ -10,9 +10,11 @@ export default function Navigation() {
                 <div className="flex items-center justify-between">
                     {/* לוגו */}
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-emerald-700 flex items-center justify-center text-white font-bold">
-                            סל
-                        </div>
+                        <img
+                            src="/logo.png"
+                            alt="ספריית שילה"
+                            className="h-10 w-10 rounded-2xl object-cover bg-[#F5EEE3]"
+                        />
                         <h1 className="text-xl font-semibold text-stone-800">ספריית שִׁלֹה</h1>
                     </div>
 
