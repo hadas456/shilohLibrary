@@ -1,7 +1,7 @@
 // src/components/BookCard.jsx - עם ניווט משופר בין תמונות
 import React, { useState } from 'react';
 import { User, MapPin, Bell, Edit2, Trash2, ArrowRight, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getStatusColor, getStatusText, getCategoryColor, formatBookLocation } from '../utils/bookHelpers';
+import { getStatusColor, getStatusText, getCategoryColorClass, formatBookLocation } from '../utils/bookHelpers';
 
 const BookCard = ({
     book,
@@ -125,7 +125,7 @@ const BookCard = ({
                 )}
 
                 {/* תג קטגוריה */}
-                <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs text-white z-10 backdrop-blur-sm shadow-lg bg-${getCategoryColor(book.category, categories)}-500`}>
+                <div className={`absolute top-2 left-2 px-2 py-1 rounded text-xs text-white z-10 backdrop-blur-sm shadow-lg ${getCategoryColorClass(book.category, categories)}`}>
                     {categories.find(c => c.id === book.category)?.name}
                 </div>
 

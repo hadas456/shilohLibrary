@@ -31,10 +31,31 @@ export const getStatusText = (status) => {
 
 /**
  * מחזיר צבע קטגוריה לפי ID
+ * תומך גם בפורמט ישן (blue) וגם בפורמט חדש (blue-500)
  */
 export const getCategoryColor = (categoryId, categories) => {
     const cat = categories.find(c => c.id === categoryId);
-    return cat ? cat.color : 'gray';
+    if (!cat) return 'gray';
+    
+    const color = cat.color;
+    if (color && color.includes('-')) {
+        return color.split('-')[0];
+    }
+    return color || 'gray';
+};
+
+/**
+ * מחזיר את המחלקה המלאה של צבע הקטגוריה
+ */
+export const getCategoryColorClass = (categoryId, categories) => {
+    const cat = categories.find(c => c.id === categoryId);
+    if (!cat) return 'bg-gray-500';
+    
+    const color = cat.color;
+    if (color && color.includes('-')) {
+        return `bg-${color}`;
+    }
+    return `bg-${color}-500`;
 };
 
 /**
