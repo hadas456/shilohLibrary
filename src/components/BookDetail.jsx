@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Edit2, Trash2, FileText, MapPin, Bell, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getStatusColor, getStatusText, getCategoryColor } from '../utils/bookHelpers';
+import { getStatusColor, getStatusText, getCategoryColorClass } from '../utils/bookHelpers';
 import {
     addLoanRequest,
     updateBook,
@@ -343,7 +343,7 @@ const BookDetail = ({
                                         <div className="flex items-center gap-2">
                                             <FileText size={16} className="text-gray-500" />
                                             <span className="text-gray-500">קטגוריה:</span>
-                                            <span className={`px-2 py-1 rounded-full text-xs text-white bg-${getCategoryColor(book.category, categories)}-500`}>
+                                            <span className={`px-2 py-1 rounded-full text-xs text-white ${getCategoryColorClass(book.category, categories)}`}>
                                                 {categories.find(c => c.id === book.category)?.name}
                                             </span>
                                         </div>
