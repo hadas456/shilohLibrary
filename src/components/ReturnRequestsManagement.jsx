@@ -211,52 +211,52 @@ export default function ReturnRequestsManagement() {
     }).length;
 
     return (
-        <div className="space-y-6">
-            <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                        <BookOpen className="w-6 h-6 text-emerald-700" />
-                        <h2 className="text-2xl font-semibold">ניהול השאלות</h2>
-                        {loading && <div className="text-sm text-emerald-700">טוען...</div>}
+        <div className="space-y-4 sm:space-y-6">
+            <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-700" />
+                        <h2 className="text-lg sm:text-2xl font-semibold">ניהול השאלות</h2>
+                        {loading && <div className="text-xs sm:text-sm text-emerald-700">טוען...</div>}
                     </div>
                     <button
                         type="button"
                         onClick={loadRequests}
                         disabled={loading}
-                        className="flex min-h-11 items-center gap-2 px-4 py-2 bg-emerald-700 text-white rounded-xl hover:bg-emerald-800 transition-colors disabled:opacity-50"
+                        className="flex min-h-10 sm:min-h-11 items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-700 text-white rounded-xl hover:bg-emerald-800 transition-colors disabled:opacity-50 text-sm"
                     >
                         <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                        רענן
+                        <span className="hidden sm:inline">רענן</span>
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-                        <div className="text-2xl font-bold text-amber-900">{loanRequests.length}</div>
-                        <div className="text-sm text-amber-800">בקשות השאלה ממתינות</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    <div className="bg-amber-50 rounded-xl p-3 sm:p-4 border border-amber-200">
+                        <div className="text-xl sm:text-2xl font-bold text-amber-900">{loanRequests.length}</div>
+                        <div className="text-xs sm:text-sm text-amber-800">בקשות השאלה</div>
                     </div>
-                    <div className="bg-purple-50 rounded-xl p-4 border border-purple-200">
-                        <div className="text-2xl font-bold text-purple-900">{returnRequests.length}</div>
-                        <div className="text-sm text-purple-700">בקשות החזרה ממתינות</div>
+                    <div className="bg-purple-50 rounded-xl p-3 sm:p-4 border border-purple-200">
+                        <div className="text-xl sm:text-2xl font-bold text-purple-900">{returnRequests.length}</div>
+                        <div className="text-xs sm:text-sm text-purple-700">בקשות החזרה</div>
                     </div>
-                    <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                        <div className="text-2xl font-bold text-green-900">{todayCount}</div>
-                        <div className="text-sm text-green-700">בקשות שהתקבלו היום</div>
+                    <div className="bg-green-50 rounded-xl p-3 sm:p-4 border border-green-200">
+                        <div className="text-xl sm:text-2xl font-bold text-green-900">{todayCount}</div>
+                        <div className="text-xs sm:text-sm text-green-700">התקבלו היום</div>
                     </div>
                 </div>
             </div>
 
-            <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                <h3 className="text-lg font-semibold mb-4">בקשות השאלה ממתינות לאישור</h3>
+            <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">בקשות השאלה ממתינות לאישור</h3>
 
                 {loanRequests.length === 0 ? (
-                    <div className="text-center py-12">
-                        <BookOpen className="mx-auto text-gray-400 mb-4" size={64} />
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">אין בקשות השאלה ממתינות</h3>
-                        <p className="text-gray-500">כל הבקשות טופלו או שאין בקשות חדשות</p>
+                    <div className="text-center py-8 sm:py-12">
+                        <BookOpen className="mx-auto text-gray-400 mb-4" size={48} />
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">אין בקשות השאלה ממתינות</h3>
+                        <p className="text-gray-500 text-sm sm:text-base">כל הבקשות טופלו או שאין בקשות חדשות</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {loanRequests.map((request) => {
                             const bookDetails = getBookDetails(request.bookId);
                             const isProcessing = processingRequestId === request.id;
@@ -265,20 +265,20 @@ export default function ReturnRequestsManagement() {
                             return (
                                 <div
                                     key={request.id}
-                                    className="border rounded-xl p-4 bg-amber-50 border-amber-200 transition-all hover:shadow-md"
+                                    className="border rounded-xl p-3 sm:p-4 bg-amber-50 border-amber-200 transition-all hover:shadow-md"
                                 >
-                                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                    <div className="flex flex-col gap-3 sm:gap-4">
                                         <div className="flex-1">
-                                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                <h4 className="font-semibold text-lg">{request.bookTitle}</h4>
-                                                <span className="px-3 py-1 rounded-full text-sm bg-amber-100 text-amber-800 border border-amber-300">
-                                                    ממתין לאישור השאלה
+                                            <div className="flex flex-wrap items-start sm:items-center gap-2 sm:gap-3 mb-2">
+                                                <h4 className="font-semibold text-base sm:text-lg">{request.bookTitle}</h4>
+                                                <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm bg-amber-100 text-amber-800 border border-amber-300">
+                                                    ממתין לאישור
                                                 </span>
                                             </div>
 
-                                            <div className="text-sm text-gray-600 space-y-1">
+                                            <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    <User className="w-4 h-4" />
+                                                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     <span><strong>מבקש:</strong> {request.requesterName}</span>
                                                 </div>
 
@@ -288,30 +288,29 @@ export default function ReturnRequestsManagement() {
 
                                                 {locationText && (
                                                     <div className="flex items-center gap-2">
-                                                        <MapPin className="w-4 h-4" />
+                                                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
                                                         <span><strong>מיקום:</strong> {locationText}</span>
                                                     </div>
                                                 )}
 
                                                 {request.contactPhone && (
                                                     <div className="flex items-center gap-2">
-                                                        <Phone className="w-4 h-4" />
+                                                        <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
                                                         <span dir="ltr"><strong>טלפון:</strong> {request.contactPhone}</span>
                                                     </div>
                                                 )}
 
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
+                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     <span>
                                                         <strong>תאריך בקשה:</strong>{' '}
-                                                        {new Date(request.createdAt).toLocaleDateString('he-IL')}{' '}
-                                                        {new Date(request.createdAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}
+                                                        {new Date(request.createdAt).toLocaleDateString('he-IL')}
                                                     </span>
                                                 </div>
 
                                                 {request.expectedReturnDate && (
                                                     <div className="flex items-center gap-2">
-                                                        <Clock className="w-4 h-4" />
+                                                        <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                                                         <span>
                                                             <strong>החזרה משוערת:</strong>{' '}
                                                             {new Date(request.expectedReturnDate).toLocaleDateString('he-IL')}
@@ -320,18 +319,18 @@ export default function ReturnRequestsManagement() {
                                                 )}
 
                                                 {request.notes && (
-                                                    <div className="text-blue-700 bg-blue-50 p-2 rounded mt-2">
+                                                    <div className="text-blue-700 bg-blue-50 p-2 rounded mt-2 text-xs sm:text-sm">
                                                         <strong>הערות המשתמש:</strong> {request.notes}
                                                     </div>
                                                 )}
                                             </div>
 
                                             <label className="block mt-3">
-                                                <span className="block text-sm font-medium text-stone-700 mb-1">הערות אדמין (אופציונלי)</span>
+                                                <span className="block text-xs sm:text-sm font-medium text-stone-700 mb-1">הערות אדמין (אופציונלי)</span>
                                                 <textarea
                                                     value={adminNotes[request.id] || ''}
                                                     onChange={(e) => setAdminNotes((prev) => ({ ...prev, [request.id]: e.target.value }))}
-                                                    className="w-full rounded-lg border border-amber-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                                                    className="w-full rounded-lg border border-amber-200 px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
                                                     rows={2}
                                                     placeholder="הערות שיישלחו למשתמש..."
                                                     disabled={isProcessing}
@@ -339,22 +338,22 @@ export default function ReturnRequestsManagement() {
                                             </label>
                                         </div>
 
-                                        <div className="flex gap-3 shrink-0">
+                                        <div className="flex gap-2 sm:gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => handleApproveLoan(request)}
                                                 disabled={isProcessing}
-                                                className="flex min-h-11 items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="flex flex-1 sm:flex-none min-h-10 sm:min-h-11 items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                                             >
                                                 {isProcessing ? (
                                                     <>
                                                         <RefreshCw className="w-4 h-4 animate-spin" />
-                                                        מעדכן...
+                                                        <span className="hidden sm:inline">מעדכן...</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <CheckCircle className="w-4 h-4" />
-                                                        אשר השאלה
+                                                        <span>אשר</span>
                                                     </>
                                                 )}
                                             </button>
@@ -363,10 +362,10 @@ export default function ReturnRequestsManagement() {
                                                 type="button"
                                                 onClick={() => handleRejectLoan(request)}
                                                 disabled={isProcessing}
-                                                className="flex min-h-11 items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                                                className="flex flex-1 sm:flex-none min-h-10 sm:min-h-11 items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm"
                                             >
                                                 <X className="w-4 h-4" />
-                                                דחה
+                                                <span>דחה</span>
                                             </button>
                                         </div>
                                     </div>
@@ -377,17 +376,17 @@ export default function ReturnRequestsManagement() {
                 )}
             </div>
 
-            <div className="rounded-3xl border border-stone-200 bg-white p-6">
-                <h3 className="text-lg font-semibold mb-4">בקשות החזרה ממתינות לאישור</h3>
+            <div className="rounded-2xl sm:rounded-3xl border border-stone-200 bg-white p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">בקשות החזרה ממתינות לאישור</h3>
 
                 {returnRequests.length === 0 ? (
-                    <div className="text-center py-12">
-                        <RefreshCw className="mx-auto text-gray-400 mb-4" size={64} />
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">אין בקשות החזרה ממתינות</h3>
-                        <p className="text-gray-500">כל הבקשות טופלו או שאין בקשות חדשות</p>
+                    <div className="text-center py-8 sm:py-12">
+                        <RefreshCw className="mx-auto text-gray-400 mb-4" size={48} />
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-2">אין בקשות החזרה ממתינות</h3>
+                        <p className="text-gray-500 text-sm sm:text-base">כל הבקשות טופלו או שאין בקשות חדשות</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                         {returnRequests.map((request) => {
                             const bookDetails = getBookDetails(request.bookId);
                             const isProcessing = processingRequestId === request.id;
@@ -396,20 +395,20 @@ export default function ReturnRequestsManagement() {
                             return (
                                 <div
                                     key={request.id}
-                                    className="border rounded-xl p-4 bg-purple-50 border-purple-200 transition-all hover:shadow-md"
+                                    className="border rounded-xl p-3 sm:p-4 bg-purple-50 border-purple-200 transition-all hover:shadow-md"
                                 >
-                                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                    <div className="flex flex-col gap-3 sm:gap-4">
                                         <div className="flex-1">
-                                            <div className="flex flex-wrap items-center gap-3 mb-2">
-                                                <h4 className="font-semibold text-lg">{request.bookTitle}</h4>
-                                                <span className="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700 border border-purple-300">
+                                            <div className="flex flex-wrap items-start sm:items-center gap-2 sm:gap-3 mb-2">
+                                                <h4 className="font-semibold text-base sm:text-lg">{request.bookTitle}</h4>
+                                                <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm bg-purple-100 text-purple-700 border border-purple-300">
                                                     ממתין לאישור החזרה
                                                 </span>
                                             </div>
 
-                                            <div className="text-sm text-gray-600 space-y-1">
+                                            <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    <User className="w-4 h-4" />
+                                                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     <span><strong>מחזיר:</strong> {request.requesterName}</span>
                                                 </div>
 
@@ -419,15 +418,15 @@ export default function ReturnRequestsManagement() {
 
                                                 {locationText && (
                                                     <div className="flex items-center gap-2">
-                                                        <MapPin className="w-4 h-4" />
+                                                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
                                                         <span><strong>מיקום:</strong> {locationText}</span>
                                                     </div>
                                                 )}
 
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className="w-4 h-4" />
+                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                                                     <span>
-                                                        <strong>תאריך בקשת החזרה:</strong>{' '}
+                                                        <strong>בקשת החזרה:</strong>{' '}
                                                         {new Date(request.updatedAt || request.createdAt).toLocaleDateString('he-IL')}
                                                     </span>
                                                 </div>
@@ -441,20 +440,20 @@ export default function ReturnRequestsManagement() {
                                                 )}
 
                                                 {request.notes && (
-                                                    <div className="text-blue-700 bg-blue-50 p-2 rounded mt-2">
+                                                    <div className="text-blue-700 bg-blue-50 p-2 rounded mt-2 text-xs sm:text-sm">
                                                         <strong>הערות המשתמש:</strong> {request.notes}
                                                     </div>
                                                 )}
 
                                                 {request.adminNotes && (
-                                                    <div className="text-green-700 bg-green-50 p-2 rounded mt-2">
+                                                    <div className="text-green-700 bg-green-50 p-2 rounded mt-2 text-xs sm:text-sm">
                                                         <strong>הערות קודמות:</strong> {request.adminNotes}
                                                     </div>
                                                 )}
                                             </div>
                                         </div>
 
-                                        <div className="flex gap-3 shrink-0">
+                                        <div className="flex gap-2 sm:gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() => handleApproveReturn(
@@ -465,17 +464,17 @@ export default function ReturnRequestsManagement() {
                                                     request.requesterId
                                                 )}
                                                 disabled={isProcessing}
-                                                className="flex min-h-11 items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="flex flex-1 sm:flex-none min-h-10 sm:min-h-11 items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                                             >
                                                 {isProcessing ? (
                                                     <>
                                                         <RefreshCw className="w-4 h-4 animate-spin" />
-                                                        מאשר...
+                                                        <span className="hidden sm:inline">מאשר...</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <CheckCircle className="w-4 h-4" />
-                                                        אשר החזרה
+                                                        <span>אשר החזרה</span>
                                                     </>
                                                 )}
                                             </button>
@@ -488,9 +487,9 @@ export default function ReturnRequestsManagement() {
                 )}
             </div>
 
-            <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6">
-                <h3 className="text-lg font-semibold text-emerald-900 mb-3">הנחיות לטיפול בהשאלות</h3>
-                <div className="text-emerald-800 space-y-2 text-sm">
+            <div className="rounded-2xl sm:rounded-3xl border border-emerald-200 bg-emerald-50 p-4 sm:p-6">
+                <h3 className="text-base sm:text-lg font-semibold text-emerald-900 mb-2 sm:mb-3">הנחיות לטיפול בהשאלות</h3>
+                <div className="text-emerald-800 space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                     <div>• אשר השאלה רק אם הספר פנוי ונמצא במדף</div>
                     <div>• לאחר אישור, הספר יסומן כמושאל והמשתמש יקבל הודעה</div>
                     <div>• אם אושרה השאלה, בקשות ממתינות אחרות לאותו ספר יידחו אוטומטית</div>
