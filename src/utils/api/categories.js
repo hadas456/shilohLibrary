@@ -3,7 +3,7 @@ import {
     doc,
     getDocs,
     addDoc,
-    updateDoc,
+    setDoc,
     deleteDoc,
     serverTimestamp
 } from 'firebase/firestore';
@@ -66,10 +66,11 @@ export const updateCategory = async (categoryId, categoryData) => {
 
     try {
         const categoryRef = doc(db, 'categories', categoryId);
-        await updateDoc(categoryRef, {
+        await setDoc(categoryRef, {
             ...categoryData,
+            id: categoryId,
             updatedAt: serverTimestamp()
-        });
+        }, { merge: true });
     } catch (error) {
         console.error('שגיאה בעדכון קטגוריה:', error);
         throw error;

@@ -60,27 +60,27 @@ function ColorPickerGrid({ selectedColor, onSelectColor, disabled }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="space-y-2">
-            <div className="flex items-center justify-between">
+        <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <span className="text-sm font-medium text-stone-700">בחר צבע:</span>
                 <button
                     type="button"
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="text-sm text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                    className="flex items-center justify-center gap-1 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-lg transition-colors"
                     disabled={disabled}
                 >
-                    {isExpanded ? 'הסתר טבלה' : 'הצג טבלת צבעים מלאה'}
+                    {isExpanded ? 'הסתר טבלה מלאה' : 'הצג את כל הצבעים (120)'}
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
             </div>
 
             {isExpanded ? (
-                <div className="border border-stone-200 rounded-xl p-3 bg-stone-50 max-h-80 overflow-y-auto">
-                    <div className="text-xs text-stone-500 mb-2 text-center">לחץ על צבע לבחירה • בהיר ← כהה</div>
-                    <div className="space-y-1.5">
+                <div className="border border-purple-200 rounded-xl p-3 bg-purple-50/50 max-h-96 overflow-y-auto">
+                    <div className="text-xs text-stone-500 mb-3 text-center">לחץ על צבע לבחירה • בהיר ← כהה</div>
+                    <div className="space-y-2">
                         {colorFamilies.map(family => (
                             <div key={family.family} className="flex items-center gap-2">
-                                <span className="text-xs text-stone-600 w-16 text-left flex-shrink-0">{family.name}</span>
+                                <span className="text-xs text-stone-600 w-14 sm:w-16 text-left flex-shrink-0">{family.name}</span>
                                 <div className="flex gap-1 flex-1">
                                     {family.shades.map(shade => (
                                         <button
@@ -88,9 +88,9 @@ function ColorPickerGrid({ selectedColor, onSelectColor, disabled }) {
                                             type="button"
                                             onClick={() => onSelectColor(shade)}
                                             disabled={disabled}
-                                            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${colorClasses[shade]} transition-all hover:scale-110 ${
+                                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg ${colorClasses[shade]} transition-all hover:scale-110 ${
                                                 selectedColor === shade
-                                                    ? 'ring-2 ring-stone-800 ring-offset-2 scale-110'
+                                                    ? 'ring-2 ring-stone-800 ring-offset-1 sm:ring-offset-2 scale-110'
                                                     : 'hover:ring-1 hover:ring-stone-400'
                                             } disabled:opacity-50 disabled:cursor-not-allowed`}
                                             title={shade}
