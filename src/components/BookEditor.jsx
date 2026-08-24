@@ -57,24 +57,21 @@ export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
 
         setUploading(true);
         try {
-            // יצירת ID זמני לספר חדש
             const bookId = formData.id || `temp_${Date.now()}`;
 
             const uploadedImages = await uploadMultipleImages(
                 selectedFiles,
                 bookId,
-                (current, total, message) => {
-                    setUploadProgress({ current, total, message });
+                (current, total, message, percentage) => {
+                    setUploadProgress({ current, total, message, percentage });
                 }
             );
 
-            // הוספת התמונות החדשות לרשימה הקיימת
             setFormData(prev => ({
                 ...prev,
                 images: [...(prev.images || []), ...uploadedImages.map(img => img.url)]
             }));
 
-            // ניקוי הקבצים שנבחרו
             setSelectedFiles([]);
             setUploadProgress(null);
 
@@ -275,14 +272,15 @@ export default function BookEditor({ book, onSave, onCancel, isNew = false }) {
 
                             {/* התקדמות העלאה */}
                             {uploadProgress && (
-                                <div className="mt-2 p-2 bg-blue-50 rounded border">
-                                    <div className="text-sm text-blue-700">
-                                        {uploadProgress.message} ({uploadProgress.current}/{uploadProgress.total})
+                                <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <div className="flex items-center justify-between text-sm text-blue-700 mb-2">
+                                        <span>{uploadProgress.message} ({uploadProgress.current}/{uploadProgress.total})</span>
+                                        <span className="font-medium">{uploadProgress.percentage || 0}%</span>
                                     </div>
-                                    <div className="w-full bg-blue-200 rounded-full h-2 mt-1">
+                                    <div className="w-full bg-blue-200 rounded-full h-2.5">
                                         <div
-                                            className="bg-blue-500 h-2 rounded-full transition-all"
-                                            style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                                            className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+                                            style={{ width: `${uploadProgress.percentage || 0}%` }}
                                         />
                                     </div>
                                 </div>
