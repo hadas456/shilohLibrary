@@ -1,47 +1,65 @@
 // src/utils/imageUtils.js - פונקציות טיפול בתמונות
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage, isFirebaseEnabled } from './firebase';
+
 /**
- * העלאת תמונה ל-Firebase Storage
+ * העלאת תמונה ל-Firebase Storage עם מעקב התקדמות
  * @param {File} file - קובץ התמונה
  * @param {string} bookId - מזהה הספר
  * @param {string} imageId - מזהה התמונה (אופציונלי)
+ * @param {Function} onProgress - פונקציה לעדכון אחוז התקדמות (0-100)
  * @returns {Promise<string>} URL של התמונה
  */
-export const uploadBookImage = async (file, bookId, imageId = null) => {
+export const uploadBookImage = async (file, bookId, imageId = null, onProgress = null) => {
     if (!isFirebaseEnabled || !storage) {
         console.warn('Firebase Storage לא זמין - משתמש ב-URL מקומי');
+        if (onProgress) onProgress(100);
         return URL.createObjectURL(file);
     }
 
-    try {
-        // יצירת שם ייחודי לתמונה
-        const timestamp = Date.now();
-        const fileName = imageId || `${timestamp}_${file.name}`;
+    return new Promise((resolve, reject) => {
+        try {
+            const timestamp = Date.now();
+            const fileName = imageId || `${timestamp}_${file.name}`;
+            const imageRef = ref(storage, `books/${bookId}/${fileName}`);
 
-        // יצירת reference ל-Storage
-        const imageRef = ref(storage, `books/${bookId}/${fileName}`);
+            const uploadTask = uploadBytesResumable(imageRef, file);
 
-        // העלאת הקובץ
-        const snapshot = await uploadBytes(imageRef, file);
-
-        // קבלת URL להורדה
-        const downloadURL = await getDownloadURL(snapshot.ref);
-
-        console.log('✅ תמונה הועלתה בהצלחה:', downloadURL);
-        return downloadURL;
-
-    } catch (error) {
-        console.error('❌ שגיאה בהעלאת תמונה:', error);
-        throw new Error('שגיאה בהעלאת התמונה: ' + error.message);
-    }
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    if (onProgress) {
+                        onProgress(progress);
+                    }
+                    console.log(`📤 העלאה: ${progress}%`);
+                },
+                (error) => {
+                    console.error('❌ שגיאה בהעלאת תמונה:', error);
+                    reject(new Error('שגיאה בהעלאת התמונה: ' + error.message));
+                },
+                async () => {
+                    try {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        console.log('✅ תמונה הועלתה בהצלחה:', downloadURL);
+                        resolve(downloadURL);
+                    } catch (error) {
+                        console.error('❌ שגיאה בקבלת URL:', error);
+                        reject(new Error('שגיאה בקבלת כתובת התמונה: ' + error.message));
+                    }
+                }
+            );
+        } catch (error) {
+            console.error('❌ שגיאה באתחול העלאה:', error);
+            reject(new Error('שגיאה בהעלאת התמונה: ' + error.message));
+        }
+    });
 };
 
 /**
- * העלאת מספר תמונות
+ * העלאת מספר תמונות עם מעקב התקדמות אמיתי
  * @param {FileList|Array} files - רשימת קבצי תמונות
  * @param {string} bookId - מזהה הספר
- * @param {Function} onProgress - פונקציה לעדכון התקדמות (אופציונלי)
+ * @param {Function} onProgress - פונקציה לעדכון התקדמות (current, total, message, percentage)
  * @returns {Promise<Array>} מערך URLs של התמונות
  */
 export const uploadMultipleImages = async (files, bookId, onProgress = null) => {
@@ -52,12 +70,17 @@ export const uploadMultipleImages = async (files, bookId, onProgress = null) => 
         const file = filesArray[i];
 
         try {
-            // עדכון התקדמות
-            if (onProgress) {
-                onProgress(i + 1, filesArray.length, `מעלה תמונה ${i + 1}...`);
-            }
+            const url = await uploadBookImage(
+                file,
+                bookId,
+                null,
+                (percentage) => {
+                    if (onProgress) {
+                        onProgress(i + 1, filesArray.length, `מעלה תמונה ${i + 1}...`, percentage);
+                    }
+                }
+            );
 
-            const url = await uploadBookImage(file, bookId);
             imageUrls.push({
                 url,
                 name: file.name,
@@ -67,7 +90,9 @@ export const uploadMultipleImages = async (files, bookId, onProgress = null) => 
 
         } catch (error) {
             console.error(`שגיאה בהעלאת תמונה ${file.name}:`, error);
-            // המשך לתמונה הבאה גם במקרה של שגיאה
+            if (onProgress) {
+                onProgress(i + 1, filesArray.length, `שגיאה בהעלאת ${file.name}`, 0);
+            }
         }
     }
 
