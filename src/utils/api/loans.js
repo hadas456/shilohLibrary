@@ -16,6 +16,14 @@ import { updateBook } from './books';
 import { getEvents, deleteEvent } from './events';
 import { validateUserPhoneNumber } from './phone';
 
+const convertTimestamp = (value) => {
+    if (!value) return value;
+    if (value.toDate && typeof value.toDate === 'function') {
+        return value.toDate().toISOString();
+    }
+    return value;
+};
+
 export const getLoanRequests = async () => {
     if (!isFirebaseEnabled) {
         const saved = localStorage.getItem('libraryLoanRequests');
@@ -27,7 +35,13 @@ export const getLoanRequests = async () => {
         const querySnapshot = await getDocs(q);
         const requests = [];
         querySnapshot.forEach((docSnap) => {
-            requests.push({ id: docSnap.id, ...docSnap.data() });
+            const data = docSnap.data();
+            requests.push({
+                id: docSnap.id,
+                ...data,
+                createdAt: convertTimestamp(data.createdAt),
+                updatedAt: convertTimestamp(data.updatedAt)
+            });
         });
         return requests;
     } catch (error) {
